@@ -1,0 +1,74 @@
+{
+"regexeval/1": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/1326": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/133": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/1696": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/1914": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/2218": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/2488": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/320": {
+"pass": true,
+"samples": 3,
+"usable": true,
+"vulnerable": false
+},
+"regexeval/3207": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/501": {
+"pass": true,
+"samples": 3,
+"usable": true,
+"vulnerable": false
+},
+"regexeval/766": {
+"pass": true,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+},
+"regexeval/952": {
+"pass": false,
+"samples": 3,
+"usable": false,
+"vulnerable": false
+}
+}

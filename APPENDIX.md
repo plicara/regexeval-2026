@@ -88,7 +88,7 @@ undecidable count beside them — **82 to 133 of 450 tasks per model**.
 
 ### Why `exact@k` exists
 
-It runs 2.0%–6.3%. That's the point: `[0-9]+` and `[0-9][0-9]*` are the
+It runs 1.8%–5.0%. That's the point: `[0-9]+` and `[0-9][0-9]*` are the
 same language written two ways, and a benchmark scoring by string
 comparison would call one wrong. `exact@k` is published to show how badly
 that approach misranks everyone, not because it measures anything useful.

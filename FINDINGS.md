@@ -702,22 +702,22 @@ and why the thinking comparison stayed at 12 tasks.
 
 | Model | dfa-eq@3 | dfa-eq@3 (decided) | exact@3 | undecidable | reformatted |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `kimi-k3` | 15.2% | 17.5% | 6.3% | 82 | 18 |
-| `claude-opus-5` | 14.0% | 17.0% | 5.4% | 109 | 9 |
+| `kimi-k3` | 14.1% | 17.1% | 5.0% | 78 | 17 |
 | `qwen3.6-max-preview` | 13.8% | 17.4% | 3.8% | 94 | 11 |
+| `claude-opus-5` | 11.6% | 15.2% | 2.8% | 104 | 9 |
 | `qwen3.6-plus` | 11.6% | 14.8% | 3.8% | 99 | 9 |
 | `deepseek-v4-flash-0731` | 11.3% | 14.3% | 3.3% | 93 | 16 |
-| `glm-5.2` | 10.4% | 12.9% | 3.8% | 86 | 18 |
 | `claude-sonnet-5` | 10.4% | 13.3% | 3.3% | 97 | 9 |
+| `glm-5.2` | 10.4% | 12.9% | 3.8% | 86 | 18 |
 | `gpt-5.6-terra` | 10.2% | 13.1% | 2.0% | 100 | 11 |
-| `gpt-5.6-sol` | 9.6% | 13.6% | 2.0% | 133 | 7 |
-| `gpt-5.6-luna` | 9.3% | 12.2% | 2.0% | 113 | 9 |
+| `gpt-5.6-sol` | 9.4% | 13.3% | 1.8% | 133 | 7 |
 | `gemini-3.1-flash-lite` | 9.3% | 11.8% | 3.1% | 95 | 16 |
+| `gpt-5.6-luna` | 9.1% | 12.2% | 1.8% | 112 | 9 |
 
 **`dfa-eq`** is Question 2 — the metric §4.1 says to distrust. Reported
 twice: counting undecidable comparisons as failures, and excluding them.
 
-**`exact@3`** is string-identical answers. At 2.0%–6.3% it exists only to
+**`exact@3`** is string-identical answers. At 1.8%–5.0% it exists only to
 show how badly a string-comparison benchmark would misrank everyone.
 
 **"Reformatted"** counts answers where the model wrapped its pattern in
