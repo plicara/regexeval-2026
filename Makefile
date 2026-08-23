@@ -1,5 +1,5 @@
 # regexeval-2026 -- everything runs from a clean clone with `make`.
-.PHONY: setup setup-corpora pin detector calibrate score persample analysis check docs tables figures crosscorpus collect clean help
+.PHONY: setup setup-corpora pin detector calibrate score persample analysis check docs tables figures audit crosscorpus collect clean help
 
 PY ?= python3
 RUN ?= preview
@@ -16,6 +16,7 @@ help:
 	@echo "make check          same, and fail if they differ from committed results (CI)"
 	@echo "make analysis       recompute every derived result the paper reads (offline)"
 	@echo "make tables         regenerate every table in paper/ from committed results"
+	@echo "make audit          check every rate in the paper prose comes from a macro"
 	@echo "make setup-corpora  clone the cross-population artifacts (~250 MB, pinned)"
 	@echo "make crosscorpus    re-run the cross-population ReDoS screen (needs setup-corpora)"
 	@echo "make calibrate      measure the screen's recall per population (builds a detector)"
@@ -71,6 +72,11 @@ docs:
 
 tables:
 	$(PY) paper/make_tables.py
+
+# Recommendation 10, applied to the paper that makes it: every rate in the
+# prose is a generated macro or an explicitly listed exception.
+audit:
+	$(PY) paper/audit_numbers.py
 
 figures:
 	$(PY) paper/make_figures.py

@@ -31,3 +31,6 @@ jobs:
         run: |
           make tables
           git diff --exit-code -- paper/
+
+      - name: Check every rate in the paper prose comes from a generated macro
+        run: make audit

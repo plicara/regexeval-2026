@@ -1,34 +1,42 @@
 {
   "correlations": {
     "undec_vs_gap": {
-      "pearson": 0.603,
-      "spearman": 0.264
+      "pearson": 0.583,
+      "spearman": 0.255
     },
     "undec_vs_proven": {
-      "pearson": -0.615,
+      "pearson": -0.618,
       "spearman": -0.527
     },
     "undec_vs_undec_supported_share": {
-      "pearson": 0.816,
+      "pearson": 0.818,
       "spearman": 0.7
     },
     "undec_vs_usable": {
-      "pearson": -0.134,
-      "spearman": -0.109
+      "pearson": -0.151,
+      "spearman": -0.145
     }
   },
   "models": {
     "claude-opus-5": {
-      "proven": 47,
+      "by_verdict": {
+        "UNDECIDABLE": 4,
+        "UNSUPPORTED": 40
+      },
+      "proven": 46,
       "proven_pct": 10.6,
-      "tasks": 444,
-      "undec_supported": 45,
+      "tasks": 432,
+      "undec_supported": 44,
       "undec_supported_share_pct": 48.9,
       "undecided": 104,
-      "usable": 92,
-      "usable_pct": 20.7
+      "usable": 90,
+      "usable_pct": 20.8
     },
     "claude-sonnet-5": {
+      "by_verdict": {
+        "UNDECIDABLE": 1,
+        "UNSUPPORTED": 36
+      },
       "proven": 44,
       "proven_pct": 9.8,
       "tasks": 450,
@@ -39,16 +47,24 @@
       "usable_pct": 18.0
     },
     "deepseek-v4-flash-0731": {
+      "by_verdict": {
+        "UNDECIDABLE": 2,
+        "UNSUPPORTED": 39
+      },
       "proven": 49,
       "proven_pct": 10.9,
       "tasks": 450,
-      "undec_supported": 40,
-      "undec_supported_share_pct": 44.9,
+      "undec_supported": 41,
+      "undec_supported_share_pct": 45.6,
       "undecided": 93,
-      "usable": 89,
-      "usable_pct": 19.8
+      "usable": 90,
+      "usable_pct": 20.0
     },
     "gemini-3.1-flash-lite": {
+      "by_verdict": {
+        "UNDECIDABLE": 1,
+        "UNSUPPORTED": 37
+      },
       "proven": 39,
       "proven_pct": 8.7,
       "tasks": 450,
@@ -59,6 +75,10 @@
       "usable_pct": 17.1
     },
     "glm-5.2": {
+      "by_verdict": {
+        "UNDECIDABLE": 1,
+        "UNSUPPORTED": 40
+      },
       "proven": 43,
       "proven_pct": 9.6,
       "tasks": 450,
@@ -69,19 +89,27 @@
       "usable_pct": 18.7
     },
     "gpt-5.6-luna": {
+      "by_verdict": {
+        "UNDECIDABLE": 1,
+        "UNSUPPORTED": 44
+      },
       "proven": 38,
-      "proven_pct": 8.4,
-      "tasks": 450,
+      "proven_pct": 8.5,
+      "tasks": 449,
       "undec_supported": 45,
       "undec_supported_share_pct": 54.2,
       "undecided": 112,
       "usable": 83,
-      "usable_pct": 18.4
+      "usable_pct": 18.5
     },
     "gpt-5.6-sol": {
+      "by_verdict": {
+        "UNDECIDABLE": 3,
+        "UNSUPPORTED": 52
+      },
       "proven": 39,
       "proven_pct": 8.7,
-      "tasks": 450,
+      "tasks": 449,
       "undec_supported": 55,
       "undec_supported_share_pct": 58.5,
       "undecided": 133,
@@ -89,6 +117,10 @@
       "usable_pct": 20.9
     },
     "gpt-5.6-terra": {
+      "by_verdict": {
+        "UNDECIDABLE": 1,
+        "UNSUPPORTED": 39
+      },
       "proven": 44,
       "proven_pct": 9.8,
       "tasks": 450,
@@ -99,16 +131,24 @@
       "usable_pct": 18.7
     },
     "kimi-k3": {
+      "by_verdict": {
+        "UNDECIDABLE": 4,
+        "UNSUPPORTED": 43
+      },
       "proven": 58,
-      "proven_pct": 13.0,
-      "tasks": 447,
+      "proven_pct": 13.2,
+      "tasks": 441,
       "undec_supported": 47,
       "undec_supported_share_pct": 44.8,
       "undecided": 78,
       "usable": 105,
-      "usable_pct": 23.5
+      "usable_pct": 23.8
     },
     "qwen3.6-max-preview": {
+      "by_verdict": {
+        "UNDECIDABLE": 1,
+        "UNSUPPORTED": 39
+      },
       "proven": 57,
       "proven_pct": 12.7,
       "tasks": 450,
@@ -119,6 +159,10 @@
       "usable_pct": 21.6
     },
     "qwen3.6-plus": {
+      "by_verdict": {
+        "UNDECIDABLE": 1,
+        "UNSUPPORTED": 42
+      },
       "proven": 46,
       "proven_pct": 10.2,
       "tasks": 450,
@@ -157,8 +201,8 @@
   ],
   "pooled": {
     "undec_supported": 471,
-    "undec_supported_share_pct": 48.3,
-    "usable": 975
+    "undec_supported_share_pct": 48.4,
+    "usable": 974
   },
   "rank_shift": {
     "claude-opus-5": 0,

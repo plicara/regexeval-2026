@@ -1,5 +1,14 @@
 {
-  "common_tasks": 421,
+  "common_tasks": {
+    "pass": 421,
+    "usable": 421,
+    "vulnerable": 421
+  },
+  "discriminative_tasks": {
+    "pass": 186,
+    "usable": 162,
+    "vulnerable": 94
+  },
   "groups": [
     {
       "key": "ahead",
@@ -83,6 +92,16 @@
   ],
   "groups_fully_separated": false,
   "headline_metric": "usable",
+  "identical_pct": {
+    "pass": 56,
+    "usable": 62,
+    "vulnerable": 78
+  },
+  "identical_tasks": {
+    "pass": 235,
+    "usable": 259,
+    "vulnerable": 327
+  },
   "iterations": 10000,
   "models": {
     "claude-opus-5": {
@@ -240,6 +259,7 @@
       ]
     }
   },
+  "pairs": 55,
   "pairwise": {
     "claude-opus-5 vs claude-sonnet-5": {
       "better": "claude-opus-5",
@@ -793,6 +813,11 @@
     }
   },
   "pairwise_resolved": 9,
+  "resolved_at_95": {
+    "pass": 16,
+    "usable": 9,
+    "vulnerable": 9
+  },
   "run": "sweep",
   "seed": 20260812,
   "tasks": {

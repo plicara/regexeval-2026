@@ -2,23 +2,23 @@
   "Re(gEx|DoS)Eval": {
     "depth": {
       "mean": 0.94,
-      "median": 1,
+      "median": 1.0,
       "p90": 2
     },
     "length": {
       "mean": 43.98,
-      "median": 28,
+      "median": 28.0,
       "p90": 91
     },
-    "n": 5269,
+    "n": 5272,
     "quantified_groups": {
-      "mean": 0.54,
-      "median": 0,
+      "mean": 0.53,
+      "median": 0.0,
       "p90": 2
     },
     "quantifiers": {
       "mean": 4.55,
-      "median": 3,
+      "median": 3.0,
       "p90": 10
     },
     "shapes": {
@@ -27,7 +27,7 @@
         "empirical blow-up": 0,
         "nested quantifier": 236,
         "overlapping alternation": 0,
-        "safe": 4879
+        "safe": 4882
       },
       "share_of_vulnerable_pct": {
         "adjacent quantifiers": 39.5,
@@ -47,11 +47,11 @@
       "p90": 1
     },
     "length": {
-      "mean": 35.43,
+      "mean": 35.42,
       "median": 33,
       "p90": 58
     },
-    "n": 3383,
+    "n": 3385,
     "quantified_groups": {
       "mean": 0.21,
       "median": 0,
@@ -68,7 +68,7 @@
         "empirical blow-up": 0,
         "nested quantifier": 202,
         "overlapping alternation": 0,
-        "safe": 2826
+        "safe": 2828
       },
       "share_of_vulnerable_pct": {
         "adjacent quantifiers": 63.7,
@@ -79,6 +79,6 @@
       "vulnerable": 557,
       "vulnerable_pct": 16.5
     },
-    "with_quantified_group_pct": 18.5
+    "with_quantified_group_pct": 18.6
   }
 }

@@ -89,8 +89,9 @@ GROUPS = [
 def groups_from(models: list[str], resolved) -> list[dict]:
     """Partition models by what the paired bootstrap actually resolves.
 
-    ARTICLE.md declines to publish a ranking and says why: only 167 of 450
-    tasks separate any two of these models, and 9 of the 55 pairwise
+    ARTICLE.md declines to publish a ranking and says why: only 162 of the
+    421 tasks all eleven models answered in full separate any two of these models,
+    and 9 of the 55 pairwise
     comparisons resolve. Eleven ranked rows assert 55 orderings the data
     supports 9 of.
 
@@ -193,7 +194,6 @@ def emit_intervals(run: str) -> dict:
 
     groups = groups_from(order, resolved)
     out["headline_metric"] = HEADLINE
-    out["common_tasks"] = len(tasks)
     out["pairwise"] = pairwise
     out["pairwise_resolved"] = sum(1 for v in pairwise.values() if v["resolved"])
     out["groups"] = groups
@@ -205,6 +205,34 @@ def emit_intervals(run: str) -> dict:
         for hi, lo in zip(groups, groups[1:])
         for a in hi["models"] for b in lo["models"]
     )
+
+    # Resolved-pair counts and discriminative yield, so the table and the
+    # sentences quoting it are generated rather than transcribed. Both were
+    # written before the pass_at_k fix and neither was rebuilt after it; the
+    # vulnerable row in particular moved a long way.
+    for metric in ("usable", "pass", "vulnerable"):
+        models, data, tasks = load(run, metric)
+        point, _, diffs = bootstrap(models, data, tasks)
+        n_resolved = 0
+        for i, a in enumerate(sorted(models, key=lambda m: -point[m])):
+            for b in sorted(models, key=lambda m: -point[m])[i + 1:]:
+                key = (a, b) if a < b else (b, a)
+                sign = 1 if key == (a, b) else -1
+                ds = sorted(sign * x for x in diffs[key])
+                if pct(ds, 0.025) > 0:
+                    n_resolved += 1
+        identical = sum(1 for t in tasks if len({data[m][t] for m in models}) == 1)
+        out.setdefault("resolved_at_95", {})[metric] = n_resolved
+        out.setdefault("identical_tasks", {})[metric] = identical
+        out.setdefault("common_tasks", {})[metric] = len(tasks)
+        out.setdefault("identical_pct", {})[metric] = round(100 * identical / len(tasks))
+    out["pairs"] = len(models) * (len(models) - 1) // 2
+    # Tasks on which the models do not all agree on usable@3 -- the metric the
+    # main table is ordered by. Stated per metric rather than as one number,
+    # because the three differ a lot and a single figure invites the reader to
+    # attach it to whichever metric they were just reading about.
+    out["discriminative_tasks"] = {
+        m: out["common_tasks"][m] - out["identical_tasks"][m] for m in out["common_tasks"]}
 
     path = config.RESULTS_DIR / run / "paired_intervals.json"
     path.write_text(json.dumps(out, indent=2, sort_keys=True) + "\n")
