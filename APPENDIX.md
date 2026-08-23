@@ -1,9 +1,9 @@
-# Appendix — the harder metrics
+# Appendix: the harder metrics
 
 The README reports three numbers because three numbers tell the story.
-These are the rest. They are not hidden — they are computed in every run
-and stored in `results/sweep/` — they just aren't what you need to read the
-leaderboard.
+These are the rest. They are computed in every run
+and stored in `results/sweep/`, they just aren't what you need to read the
+results.
 
 ## The full metric set
 
@@ -16,7 +16,7 @@ leaderboard.
 | `dfa-eq@k (decided)` | The same, but only over tasks where the question could be answered. |
 | `exact@k` | Is it the identical string to the reference? |
 
-## Full results — 450 tasks, k=3, 2026-08-12
+## Full results: 450 tasks, k=3, 2026-08-12
 
 <!-- generated: full-metrics -->
 | Model | dfa-eq@3 | dfa-eq@3 (decided) | exact@3 | undecidable | tasks | wrapped |
@@ -34,14 +34,14 @@ leaderboard.
 | `gpt-5.6-luna` | 9.1% | 12.2% | 1.8% | 112 | 449 | 9 |
 <!-- /generated -->
 
-Semantic equivalence tops out at **17.5%** where `pass@3` reaches 47%.
+Semantic equivalence tops out at **17.4%** where `pass@3` reaches 46.5%.
 Reproducing the reference *language* is a far harder problem than passing
-its examples — which is the case for measuring both.
+its examples, which is why both are measured.
 
 ### ReDoS: models against the answer key
 
 One pattern per task per model, matching the human side, which has one answer
-each. The final column is an exact McNemar test on the paired tasks — the
+each. The final column is an exact McNemar test on the paired tasks: the
 models and the reference set answer the *same* tasks, so an independent
 interval on each would throw the pairing away and resolve nothing.
 
@@ -63,17 +63,18 @@ interval on each would throw the pairing away and resolve nothing.
 | **All models pooled** | 4941 | 9.0% | 5.3% | 3.8% |  |
 <!-- /generated -->
 
-Eight of the eleven separate from the reference set at 95%. The three that do
-not are the three with the highest vulnerability rates, which is what you
-would expect and is not what a ranking of the point estimates would tell you.
+Eight of the eleven separate from the reference set at a raw 95%; correcting
+for having run eleven tests (Holm) leaves six. The models that do not
+separate are the most vulnerable ones, which is what you would expect and is
+not what a ranking of the point estimates would tell you.
 
 ### Why `dfa-eq` is reported twice
 
 Comparing two regexes as *languages* is solved for most patterns: compile
 both to automata, compare the machines. But for patterns using
-**backreferences** — `(a)\1`, "match a thing then the same thing again" —
-it isn't merely hard, it is **formally undecidable**. No algorithm can
-answer it, ever. Not a limitation of this tool; a theorem.
+**backreferences** (`(a)\1`, "match a thing then the same thing again") it
+is **formally undecidable**: no algorithm can answer it, and the obstruction
+is a theorem, not a limitation of this tool.
 
 That leaves an honest reporting problem one number cannot solve:
 
@@ -82,27 +83,36 @@ That leaves an honest reporting problem one number cannot solve:
 - **`dfa-eq@k (decided)`** drops those tasks from the denominator. *Of the
   questions answerable at all, how many did the model get right?*
 
-Publishing only the second is quiet inflation. Publishing only the first
+Publishing only the second is quiet inflation, publishing only the first
 blames the model for a theorem. Both are published, always, with the
-undecidable count beside them — **82 to 133 of 450 tasks per model**.
+undecidable count beside them: **78 to 133 of each model's scored tasks**.
+
+One caution about that count. It pools the truly undecidable comparisons
+with patterns the engine simply declines (`UNSUPPORTED`: a lookahead
+containing an anchor, an inline flag group, an automaton over a state
+budget), and the split falls almost entirely on the second: across all
+models, backreferences account for twenty of the 471 `usable` credits that
+rest on an unsettled verdict, and the engine's own reach accounts for the
+rest. The paper's measurement-validity section works through what that does
+to the composite.
 
 ### Why `exact@k` exists
 
-It runs 1.8%–5.0%. That's the point: `[0-9]+` and `[0-9][0-9]*` are the
-same language written two ways, and a benchmark scoring by string
-comparison would call one wrong. `exact@k` is published to show how badly
-that approach misranks everyone, not because it measures anything useful.
+It runs 1.8%–5.0%, and that range is the whole argument: `[0-9]+` and
+`[0-9][0-9]*` are the same language written two ways, and a benchmark
+scoring by string comparison would call one of them wrong. `exact@k` is
+published to show how badly string comparison would misrank everyone.
 
 ## The reference answers contain errors
 
 This is the most important limitation on this page.
 
 `dfa-eq` compares the model against a human-written gold pattern, and some
-gold patterns are wrong. Two found by inspection, not by search:
+gold patterns are wrong. Two examples:
 
 **A literal pipe in a character class.** For *"a very simple ISBN
 validation expression"* the reference is `^\d{9}[\d|X]$`. That class
-contains digit, **pipe**, and X — someone wrote `|` meaning "or" inside
+contains digit, **pipe**, and X: someone wrote `|` meaning "or" inside
 `[...]`, where it is just a character. `claude-opus-5` wrote `^\d{9}[\dX]$`,
 which is what the prompt describes. It is scored as different, and the
 witness is `000000000|`.
@@ -111,10 +121,13 @@ witness is `000000000|`.
 reference `^\d+$` accepts `0`; the model's `^[1-9][0-9]*$` does not. Zero
 is not a positive integer.
 
-We have **not** audited how often this occurs. The consequence is
-directional and worth stating plainly: **`dfa-eq` is a lower bound on model
-correctness.** Some fraction of the gap between `pass@3` and `dfa-eq@3` is
-gold-standard error rather than model error.
+We audited how often this occurs. From a seeded random sample of sixty
+cases where a model passed every test yet was scored as semantically
+different, fourteen adjudicated in detail, the model is clearly at fault in
+roughly 15%. The rest split between incorrect reference patterns and prompts
+that never specified the property in dispute. **`dfa-eq` is a lower bound on
+model correctness**, and the majority of what it counts against a model is
+not model error. Per-case reasoning is released with the adjudications.
 
 `usable@k` inherits this, since it counts a proven difference against the
 model. `pass@k` and `vulnerable@k` do not — they run the real `re` engine
@@ -133,18 +146,19 @@ r'\d+$'      ← what the model said
 Scored literally, `r'\d+$'` matches the letter `r`, a quote, and so on. It
 fails for a reason unrelated to regex ability.
 
-**The rule: one layer of host-language quoting is stripped before scoring**
+**The rule: host-language quoting is stripped before scoring, repeatedly up
+to three nested layers so a backticked raw string arrives bare**
 (`r'…'`, `'…'`, `"…"`, `` `…` ``, `/…/flags`).
 
-It affected **7 to 18 responses per model** out of 1,350 — under 1.4%
-everywhere, too small to move any ranking. Every strip is recorded in
+It affected **7 to 18 responses per model** out of 1,350, under 1.4%
+everywhere, too small to move any conclusion. Every strip is recorded in
 `results/sweep/<model>.json` under `wrapped_detail` with before and after,
 and the unnormalized score is kept as `metrics_as_sent` so anyone who
 disagrees can use the other number without re-running anything.
 
 ## Engine limitations
 
-These belong to the scorer, `regexbench` 0.4.0, and apply to every model
+These belong to the scorer, `regexbench` 0.4.1, and apply to every model
 equally:
 
 - **`\d` is not `[0-9]`.** It matches every Unicode digit, because that is
@@ -152,7 +166,7 @@ equally:
   single thing most likely to make our numbers differ from another
   published regex eval. It also inflates apparent errors: of 806 answers
   that passed their tests but differed from the reference, **266 differed
-  only on Unicode digits** — the model wrote `[0-9]` where the gold wrote
+  only on Unicode digits**: the model wrote `[0-9]` where the gold wrote
   `\d`, or the reverse.
 - **ReDoS screening covers three of five known vulnerability families**
   structurally; the other two are caught only if the empirical pass trips
@@ -160,7 +174,8 @@ equally:
 - **Lookaround became decidable in `regexbench` 0.4.0.** Earlier versions
   refused it, so these numbers are not comparable to figures produced with
   0.3.0 or earlier.
-- **Match semantics are set per corpus.** Re(gEx|DoS)Eval's references pass
-  100% of their own tests under "search" semantics and 94% under "full
-  match" — picking wrong scores 46 gold answers as failures. Verified by
-  scoring every reference against itself before the run.
+- **Match semantics are set per corpus.** 761 of Re(gEx|DoS)Eval's 762
+  references pass their own tests under "search" semantics (the one failure
+  is itself the ReDoS-vulnerable reference) against 94% under "full match";
+  picking wrong scores 46 gold answers as failures. Verified by scoring
+  every reference against itself before the run.

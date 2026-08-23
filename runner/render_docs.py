@@ -32,12 +32,12 @@ SLUGS = {m["label"]: m["slug"] for m in
 def scores(run: str) -> list[dict]:
     rows = []
     for path in sorted(glob.glob(str(config.RESULTS_DIR / run / "*.json"))):
-        if pathlib.Path(path).name in {
-                "summary.json", "report.json", "disagreements.json",
-                "undec_credit.json", "mcnemar_reference.json", "paired_intervals.json"}:
-            continue
         d = json.loads(open(path).read())
-        if isinstance(d, dict) and d.get("metrics"):
+        # Selected by content, not by name: this directory also holds analysis
+        # outputs, and an exclusion list by filename silently breaks the next
+        # time one is added. A per-model result entry carries both "model" and
+        # "metrics"; nothing else written here does.
+        if isinstance(d, dict) and d.get("metrics") and "model" in d:
             rows.append(d)
     rows.sort(key=lambda d: -d["metrics"]["usable@3"])
     return rows

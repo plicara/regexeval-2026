@@ -6,7 +6,16 @@ paper/*.bbl
 paper/*.blg
 paper/*.log
 paper/*.out
+paper/*.fdb_latexmk
+paper/*.fls
 logs/
+
+# Internal documents -- live in the foundation_lab repo, never published here
+docs/STYLE.md
+PLAN.md
 
 .DS_Store
 ._*
+.venv/
+.claude/
+.ruff_cache/

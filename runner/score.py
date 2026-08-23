@@ -5,7 +5,7 @@ is deliberate: anyone can clone this repo and recompute every published
 number offline, and CI does exactly that on every push.
 
 One headline score per model. Patterns are normalized before scoring (see
-"the wrapper rule" in METHODOLOGY.md); the unnormalized score is also
+"The wrapper rule" in APPENDIX.md); the unnormalized score is also
 recorded in the per-model JSON so the choice is auditable, but it is not
 what the leaderboard reports.
 """
@@ -176,7 +176,7 @@ def headline(e, metric):
     return next((v for kk, v in m.items() if kk.startswith(metric + "@")), None)
 
 
-def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
+def score_run(run_name: str, only: set[str] | None = None, write: bool = True) -> list[dict]:
     dataset = config.require_dataset()
     pred_dir = config.PREDICTIONS_DIR / run_name
     result_dir = config.RESULTS_DIR / run_name
@@ -195,6 +195,13 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
         sampling = sampling_of(rows, run_name)
         controls = [r for r in rows if r["task_name"].startswith("control/")]
         task_rows = [r for r in rows if not r["task_name"].startswith("control/")]
+
+        # The runtime environment that produced the published numbers is
+        # provenance, not a side effect of whatever machine happens to be
+        # rescoring today. Carry the recorded value forward instead of letting
+        # a rescore on a different interpreter silently rewrite it.
+        prior_path = result_dir / f"{label}.json"
+        prior = json.loads(prior_path.read_text()) if prior_path.exists() else None
 
         # Controls ride the identical scoring path. A scorer returning zeros
         # looks exactly like a model that failed; these tell them apart.
@@ -275,7 +282,9 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
             ),
             "regexbench_version": config.REGEXBENCH_VERSION,
             "regexbench_commit": config.REGEXBENCH_COMMIT,
-            "python_version": sys.version.split()[0],
+            "python_version": (
+                (prior or {}).get("python_version") or sys.version.split()[0]
+            ),
             "dataset": "Re(gEx|DoS)Eval",
             "k": k_actual,
             "temperature": sampling["temperature"],
@@ -306,7 +315,8 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
             ),
             "table": rep.table(ks=(k_actual,)) if rep else None,
         }
-        (result_dir / f"{label}.json").write_text(json.dumps(entry, indent=2, sort_keys=True))
+        if write:
+            (result_dir / f"{label}.json").write_text(json.dumps(entry, indent=2, sort_keys=True))
         summary.append(entry)
 
     summary.sort(key=lambda e: (-(headline(e, "usable") if headline(e, "usable") is not None else -1),
@@ -316,7 +326,7 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
     # it with just their own model -- last writer wins, and the file silently
     # stops describing the run. Use --merge to rebuild it from the per-model
     # files once they are all present.
-    if only is None:
+    if only is None and write:
         (result_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True))
     return summary
 
@@ -355,7 +365,8 @@ def main():
     ap.add_argument(
         "--check",
         action="store_true",
-        help="fail if recomputed scores differ from the committed results/ (used by CI)",
+        help="fail if recomputed scores differ from the committed results/ (used by CI); "
+        "writes nothing",
     )
     args = ap.parse_args()
 
@@ -373,7 +384,9 @@ def main():
     stale = check_summary_matches_models(args.run)
 
     only = {m.strip() for m in args.models.split(",")} if args.models else None
-    summary = score_run(args.run, only)
+    # --check is a comparison against what is committed, so it must leave the
+    # committed files exactly as they are.
+    summary = score_run(args.run, only, write=not args.check)
     if only:
         # A partial run must not overwrite the whole-run summary.
         print_summary(summary)

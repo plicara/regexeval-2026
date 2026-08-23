@@ -5,7 +5,8 @@ ordered one to eleven by usable@3; it ran once, to plicara.ai, and was
 reverted the same day, because the study declines to publish exactly that --
 see ARTICLE.md, "What we are not claiming": "Bands are defensible. A numbered
 list from one to eleven is not." 62% of tasks give every model the identical
-result, only 167 of 450 separate any two of them, and 9 of the 55 pairwise
+result, only 167 of the 441 tasks all eleven models answered separate any two
+of them, and 9 of the 55 pairwise
 comparisons resolve. Eleven ranked rows assert 55 orderings the data supports
 9 of.
 
