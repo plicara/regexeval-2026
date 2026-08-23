@@ -20,18 +20,29 @@ name: publish benchmarks
 # receive secrets, and failing them for that is noise. That does mean the
 # automation is inert until the secret is set -- check the run summary.
 
-# DISABLED on the push trigger, 2026-08-19. render_site.py emits a table
-# ordered one-to-eleven by usable@3, and ARTICLE.md's "What we are not
-# claiming" says plainly: "We started out building a leaderboard. We are not
-# publishing one. [...] Bands are defensible. A numbered list from one to
-# eleven is not." Automating that publication would republish the thing the
-# study declines to publish, every time results/ changed.
+# The push trigger was disabled on 2026-08-19 and re-enabled on 2026-08-22.
+# It was disabled because render_site.py emitted a table ordered one to eleven
+# by usable@3, and ARTICLE.md's "What we are not claiming" says plainly: "We
+# started out building a leaderboard. We are not publishing one. [...] Bands
+# are defensible. A numbered list from one to eleven is not." Automating that
+# would have republished the thing the study declines to publish, every time
+# results/ changed.
 #
-# Re-enable the push trigger once render_site.py emits bands rather than a
-# ranking, and once the pass_at_k short-task defect (REVISION-PLAN.md part 2
-# item 5) is fixed upstream in regexbench and the scores re-run. Until then
-# this is manual-only, so a person has to look at what goes out.
+# Both conditions set for re-enabling are met. render_site.py now emits bands
+# read from results/<run>/paired_intervals.json, and refuses to render at all
+# if that file is missing or does not cover the scored models -- so it cannot
+# silently fall back to a list. And the pass_at_k short-task defect is fixed
+# upstream in regexbench 0.4.1, which every run in results/ has been rescored
+# against.
+#
+# This still opens a pull request rather than pushing. The page is public
+# content and a person looks at it before it goes out; that has not changed.
 on:
+  push:
+    branches: [main]
+    paths:
+      - "results/**"
+      - "runner/render_site.py"
   workflow_dispatch:
     inputs:
       run:

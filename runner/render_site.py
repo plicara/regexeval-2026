@@ -1,15 +1,22 @@
 """Generate the /benchmarks/ page for plicara.ai from results.
 
-DO NOT PUBLISH THIS PAGE AS IT STANDS. It emits a table ordered one to eleven
-by usable@3, and the study declines to publish a ranking -- see ARTICLE.md,
-"What we are not claiming": "Bands are defensible. A numbered list from one
-to eleven is not." 62% of tasks give every model the identical result, and
-only 167 of 450 separate them at all. The scores it reads are also inflated
-by the pass_at_k short-task defect in REVISION-PLAN.md part 2 item 5.
+Emits groups, not a ranking. An earlier version of this file emitted a table
+ordered one to eleven by usable@3; it ran once, to plicara.ai, and was
+reverted the same day, because the study declines to publish exactly that --
+see ARTICLE.md, "What we are not claiming": "Bands are defensible. A numbered
+list from one to eleven is not." 62% of tasks give every model the identical
+result, only 167 of the 441 tasks all eleven models answered separate any two
+of them, and 9 of the 55 pairwise
+comparisons resolve. Eleven ranked rows assert 55 orderings the data supports
+9 of.
 
-This ran once, to plicara.ai, and was reverted the same day. Fix the
-presentation (bands, not a list) and the upstream metric before it runs
-again.
+The groups come from results/<run>/paired_intervals.json, which
+runner/paired_stats.py writes from the paired bootstrap. They are not
+recomputed here: the page and the paper have to be making the same claim, and
+the way to guarantee that is to read it rather than derive it twice. Models
+within a group are ordered alphabetically, so the file gives no ordering the
+statistics do not support -- including between the groups themselves, which
+on this data are not ordered either.
 
 
 The site is hand-written static HTML with no build step, so this emits a
@@ -37,30 +44,80 @@ def pct(v):
     return "&mdash;" if v is None else f"{v * 100:.1f}%"
 
 
-def render(summary: list[dict], run_date: str, k: int, task_count: int) -> str:
-    rows = []
-    for e in summary:
-        m = e.get("metrics")
-        label = html.escape(e["model"])
-        prov = html.escape(", ".join(e.get("providers_resolved") or []) or "&mdash;")
-        if m is None:
-            cells = "".join(
-                f'<td class="num mono">&mdash;</td>' for _ in range(4)
-            )
-            rows.append(
-                f'<tr><th scope="row" class="mono">{label}</th>{cells}'
-                f'<td class="num mono">{e["response_failures"]}/{e["tasks_attempted"]}</td></tr>'
-            )
+GROUP_NOTE = (
+    "Groups say what the paired bootstrap resolves at 95%, and nothing more. "
+    "They are not ranked against each other: claude-opus-5 is in the first "
+    "group and glm-5.2 in the last, and those two are not distinguishable "
+    "from one another. Order within a group is alphabetical and means nothing."
+)
+
+
+def row_for(e: dict, k: int, sep: dict | None) -> str:
+    m = e.get("metrics")
+    label = html.escape(e["model"])
+    if sep is None:
+        sepcell = "&mdash;"
+    else:
+        # Written as a pair rather than a single rank, because "ahead of two,
+        # behind none" and "ahead of two, behind three" are different claims
+        # and a rank would flatten them into one.
+        sepcell = f"+{sep['ahead_of']} / &minus;{sep['behind']}"
+    if m is None:
+        cells = "".join('<td class="num mono">&mdash;</td>' for _ in range(4))
+        return (f'<tr><th scope="row" class="mono">{label}</th>{cells}'
+                f'<td class="num mono">{sepcell}</td>'
+                f'<td class="num mono">{e["response_failures"]}'
+                f'/{e["tasks_attempted"]}</td></tr>')
+    return (
+        f'<tr><th scope="row" class="mono">{label}</th>'
+        f'<td class="num mono">{pct(m[f"usable@{k}"])}</td>'
+        f'<td class="num mono">{pct(m[f"pass@{k}"])}</td>'
+        f'<td class="num mono">{pct(m[f"vulnerable@{k}"])}</td>'
+        f'<td class="num mono">{pct(m[f"dfa-eq@{k}"])}</td>'
+        f'<td class="num mono">{sepcell}</td>'
+        f'<td class="num mono">{e["response_failures"]}/{e["tasks_attempted"]}</td></tr>'
+    )
+
+
+def grouped_rows(summary: list[dict], groups: list[dict], k: int) -> str:
+    """One <tbody> per group, models alphabetical inside it.
+
+    A model the bootstrap never placed -- one that answered too little to have
+    per-task outcomes -- goes in a final group of its own rather than being
+    dropped or appended to the last one. "We could not compare this" and "this
+    came last" are different statements, and only one of them is true.
+    """
+    by_model = {e["model"]: e for e in summary}
+    placed, out = set(), []
+    for g in groups:
+        members = [m for m in g["models"] if m in by_model]
+        if not members:
             continue
-        rows.append(
-            f'<tr><th scope="row" class="mono">{label}</th>'
-            f'<td class="num mono">{pct(m[f"usable@{k}"])}</td>'
-            f'<td class="num mono">{pct(m[f"pass@{k}"])}</td>'
-            f'<td class="num mono">{pct(m[f"vulnerable@{k}"])}</td>'
-            f'<td class="num mono">{pct(m[f"dfa-eq@{k}"])}</td>'
-            f'<td class="num mono">{e["response_failures"]}/{e["tasks_attempted"]}</td></tr>'
+        placed.update(members)
+        rows = "\n            ".join(
+            row_for(by_model[m], k, g["separations"].get(m)) for m in members
         )
-    body = "\n            ".join(rows)
+        out.append(
+            f'<tbody class="band">\n'
+            f'            <tr class="band-head"><th scope="rowgroup" colspan="7">'
+            f'{html.escape(g["label"])}</th></tr>\n            {rows}\n'
+            f'          </tbody>'
+        )
+    unplaced = sorted(set(by_model) - placed)
+    if unplaced:
+        rows = "\n            ".join(row_for(by_model[m], k, None) for m in unplaced)
+        out.append(
+            f'<tbody class="band">\n'
+            f'            <tr class="band-head"><th scope="rowgroup" colspan="7">'
+            f'Not compared &mdash; too few scored tasks</th></tr>\n'
+            f'            {rows}\n          </tbody>'
+        )
+    return "\n          ".join(out)
+
+
+def render(summary: list[dict], run_date: str, k: int, task_count: int,
+           groups: list[dict], resolved: int, comparisons: int) -> str:
+    body = grouped_rows(summary, groups, k)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -95,6 +152,27 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
 
     <link rel="stylesheet" href="/assets/tokens.css" />
     <link rel="stylesheet" href="/assets/style.css" />
+
+    <!-- The grouped table is the one thing on this page the site's design
+         system has no component for, because no other table on the site has
+         row groups. Scoped here rather than added to style.css: the site repo
+         receives this file as a drop-in, and a page that needs a stylesheet
+         change in another commit is a page that ships broken when the two get
+         separated. Everything below inherits from currentColor and the
+         surrounding type, so it follows the theme without naming a token. -->
+    <style>
+      .data-table tbody.band + tbody.band {{ border-top: 1px solid; }}
+      .data-table tbody.band + tbody.band > tr:first-child > th {{ padding-top: 1.25rem; }}
+      .data-table .band-head > th {{
+        text-align: left;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        opacity: 0.72;
+        padding-bottom: 0.35rem;
+      }}
+    </style>
   </head>
   <!-- data-scheme sits on body rather than html: tokens.css declares the
        default :root block after the scheme blocks, so a scheme on the root
@@ -131,7 +209,10 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
       <div class="table-wrap">
         <table class="data-table">
           <caption class="visually-hidden">
-            {len(summary)} models scored on Re(gEx|DoS)Eval, sorted by usable@{k}.
+            {len(summary)} models scored on Re(gEx|DoS)Eval, in {len(groups)}
+            groups by what a paired bootstrap on usable@{k} resolves. The
+            groups are not ranked against each other and the order inside a
+            group is alphabetical.
           </caption>
           <thead>
             <tr>
@@ -140,6 +221,7 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
               <th scope="col" class="num">pass@{k}</th>
               <th scope="col" class="num">vulnerable@{k}</th>
               <th scope="col" class="num">dfa-eq@{k}</th>
+              <th scope="col" class="num">separates</th>
               <th scope="col" class="num">failed</th>
             </tr>
           </thead>
@@ -148,6 +230,16 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
           </tbody>
         </table>
       </div>
+
+      <p class="note">
+        <strong>These are groups, not a ranking.</strong> {GROUP_NOTE} Of the
+        {comparisons} pairwise comparisons between these {len(summary)} models,
+        only {resolved} resolve; the rest are ties this run cannot break. The
+        <strong>separates</strong> column reads +ahead / &minus;behind: how
+        many of the other models this one is distinguishably better than, and
+        worse than. Most of the corpus does no work here &mdash; the majority
+        of tasks give every model the identical result.
+      </p>
 
       <p class="note">
         <strong>usable@{k}</strong> is the headline: correct, not vulnerable to
@@ -160,7 +252,8 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
       <p class="note">
         {task_count} tasks from Re(gEx|DoS)Eval, k={k} samples per task, reasoning
         disabled so every model faces the same conditions. Scored with
-        <code>regexbench</code> 0.4.0. Run {html.escape(run_date)}. Every raw
+        <code>regexbench</code> {html.escape(config.REGEXBENCH_VERSION)}. Run
+        {html.escape(run_date)}. Every raw
         response is committed, and the scores recompute from them offline &mdash;
         <a href="https://github.com/plicara/regexeval-2026">see the
         repository</a> for the method, the limitations, and a re-run command.
@@ -201,6 +294,25 @@ def main():
 
     summary = json.loads((config.RESULTS_DIR / args.run / "summary.json").read_text())
 
+    # The groups are a statistical claim, so they are read from the analysis
+    # rather than invented here. No file, no page: publishing a plain list
+    # because the bootstrap has not been run is precisely the failure this
+    # generator was rewritten to prevent.
+    ipath = config.RESULTS_DIR / args.run / "paired_intervals.json"
+    if not ipath.exists():
+        ap.error(f"no {ipath}. Run: python3 runner/paired_stats.py --run "
+                 f"{args.run} --emit-intervals")
+    intervals = json.loads(ipath.read_text())
+    groups = intervals.get("groups")
+    if not groups:
+        ap.error(f"{ipath} carries no 'groups'. Regenerate it with the current "
+                 f"runner/paired_stats.py.")
+    banded = {m for g in groups for m in g["models"]}
+    scored = {e["model"] for e in summary if e.get("metrics")}
+    if not scored <= banded:
+        ap.error(f"{', '.join(sorted(scored - banded))} scored but absent from "
+                 f"the groups in {ipath}; the two files describe different runs.")
+
     # Both of these used to be required arguments, which meant the page could
     # only be regenerated by someone who remembered the run's date and size.
     # They are recoverable -- the date from config, the task count from the
@@ -210,11 +322,14 @@ def main():
         ap.error(f"no date for run {args.run!r}: pass --date or add it to "
                  f"config.RUN_DATES")
     tasks = args.tasks or max(e["tasks_attempted"] // e["k"] for e in summary)
-    page = render(summary, date, args.k, tasks)
+    page = render(summary, date, args.k, tasks, groups,
+                  intervals["pairwise_resolved"], len(intervals["pairwise"]))
     out = Path(args.out) if args.out else config.REPO / "docs" / "benchmarks-index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page)
     print(f"wrote {out} ({len(page)} bytes)")
+    print(f"{len(groups)} groups, {intervals['pairwise_resolved']} of "
+          f"{len(intervals['pairwise'])} comparisons resolved")
     print("copy into the site repo as benchmarks/index.html")
 
 

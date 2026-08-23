@@ -5,7 +5,7 @@ is deliberate: anyone can clone this repo and recompute every published
 number offline, and CI does exactly that on every push.
 
 One headline score per model. Patterns are normalized before scoring (see
-"the wrapper rule" in METHODOLOGY.md); the unnormalized score is also
+"The wrapper rule" in APPENDIX.md); the unnormalized score is also
 recorded in the per-model JSON so the choice is auditable, but it is not
 what the leaderboard reports.
 """
@@ -80,6 +80,51 @@ def rebuild_summary(run_name: str) -> list[dict]:
     return entries
 
 
+def check_summary_matches_models(run_name: str) -> list[str]:
+    """Committed summary.json against the committed per-model files.
+
+    summary.json is derived from those files and must agree with them field
+    for field. It has silently stopped agreeing twice, both times through a
+    merge rather than a run: `regexbench_commit` was repointed after an
+    upstream history rewrite, and two later branches carried the pre-rewrite
+    value back into the summary while all eleven per-model files kept the new
+    one. Nothing caught it, because --check compares `metrics` and the drift
+    was in provenance.
+
+    This compares what is on disk before anything is rescored, so it reports
+    the state of the repository rather than the state of this process.
+    """
+    result_dir = config.RESULTS_DIR / run_name
+    summary_path = result_dir / "summary.json"
+    if not summary_path.exists():
+        return []
+    summary = {e["model"]: e for e in json.loads(summary_path.read_text())}
+    problems, seen = [], set()
+    # Selected by content, not by name: this directory also holds analysis
+    # outputs, and an exclusion list by filename breaks the next time one is
+    # added -- which is how it broke before.
+    for f in sorted(result_dir.glob("*.json")):
+        if f.name == "summary.json":
+            continue
+        blob = json.loads(f.read_text())
+        if not (isinstance(blob, dict) and "metrics" in blob and "model" in blob):
+            continue
+        seen.add(blob["model"])
+        entry = summary.get(blob["model"])
+        if entry is None:
+            problems.append(f"{blob['model']}: in {f.name}, absent from summary.json")
+            continue
+        for key in sorted(set(blob) | set(entry)):
+            if blob.get(key) != entry.get(key):
+                problems.append(
+                    f"{blob['model']}.{key}: {f.name} says {blob.get(key)!r}, "
+                    f"summary.json says {entry.get(key)!r}"
+                )
+    for m in sorted(set(summary) - seen):
+        problems.append(f"{m}: in summary.json, no per-model file")
+    return problems
+
+
 def sampling_of(rows: list[dict], run_name: str) -> dict:
     """What these responses were actually produced under.
 
@@ -131,7 +176,7 @@ def headline(e, metric):
     return next((v for kk, v in m.items() if kk.startswith(metric + "@")), None)
 
 
-def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
+def score_run(run_name: str, only: set[str] | None = None, write: bool = True) -> list[dict]:
     dataset = config.require_dataset()
     pred_dir = config.PREDICTIONS_DIR / run_name
     result_dir = config.RESULTS_DIR / run_name
@@ -150,6 +195,13 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
         sampling = sampling_of(rows, run_name)
         controls = [r for r in rows if r["task_name"].startswith("control/")]
         task_rows = [r for r in rows if not r["task_name"].startswith("control/")]
+
+        # The runtime environment that produced the published numbers is
+        # provenance, not a side effect of whatever machine happens to be
+        # rescoring today. Carry the recorded value forward instead of letting
+        # a rescore on a different interpreter silently rewrite it.
+        prior_path = result_dir / f"{label}.json"
+        prior = json.loads(prior_path.read_text()) if prior_path.exists() else None
 
         # Controls ride the identical scoring path. A scorer returning zeros
         # looks exactly like a model that failed; these tell them apart.
@@ -230,7 +282,9 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
             ),
             "regexbench_version": config.REGEXBENCH_VERSION,
             "regexbench_commit": config.REGEXBENCH_COMMIT,
-            "python_version": sys.version.split()[0],
+            "python_version": (
+                (prior or {}).get("python_version") or sys.version.split()[0]
+            ),
             "dataset": "Re(gEx|DoS)Eval",
             "k": k_actual,
             "temperature": sampling["temperature"],
@@ -261,7 +315,8 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
             ),
             "table": rep.table(ks=(k_actual,)) if rep else None,
         }
-        (result_dir / f"{label}.json").write_text(json.dumps(entry, indent=2, sort_keys=True))
+        if write:
+            (result_dir / f"{label}.json").write_text(json.dumps(entry, indent=2, sort_keys=True))
         summary.append(entry)
 
     summary.sort(key=lambda e: (-(headline(e, "usable") if headline(e, "usable") is not None else -1),
@@ -271,7 +326,7 @@ def score_run(run_name: str, only: set[str] | None = None) -> list[dict]:
     # it with just their own model -- last writer wins, and the file silently
     # stops describing the run. Use --merge to rebuild it from the per-model
     # files once they are all present.
-    if only is None:
+    if only is None and write:
         (result_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True))
     return summary
 
@@ -310,7 +365,8 @@ def main():
     ap.add_argument(
         "--check",
         action="store_true",
-        help="fail if recomputed scores differ from the committed results/ (used by CI)",
+        help="fail if recomputed scores differ from the committed results/ (used by CI); "
+        "writes nothing",
     )
     args = ap.parse_args()
 
@@ -323,9 +379,14 @@ def main():
 
     committed_path = config.RESULTS_DIR / args.run / "summary.json"
     committed = json.loads(committed_path.read_text()) if committed_path.exists() else None
+    # Read before score_run rewrites anything, so this reports the repository
+    # rather than this process.
+    stale = check_summary_matches_models(args.run)
 
     only = {m.strip() for m in args.models.split(",")} if args.models else None
-    summary = score_run(args.run, only)
+    # --check is a comparison against what is committed, so it must leave the
+    # committed files exactly as they are.
+    summary = score_run(args.run, only, write=not args.check)
     if only:
         # A partial run must not overwrite the whole-run summary.
         print_summary(summary)
@@ -336,6 +397,14 @@ def main():
     if args.check:
         if committed is None:
             raise SystemExit(f"--check: nothing committed at {committed_path}")
+        if stale:
+            print("\nFAIL: committed summary.json disagrees with the committed "
+                  "per-model files it is derived from:")
+            for problem in stale:
+                print(f"  {problem}")
+            print("  fix with:  python3 runner/score.py --run "
+                  f"{args.run} --merge")
+            raise SystemExit(1)
         drift = []
         old = {e["model"]: e.get("metrics") for e in committed}
         for e in summary:

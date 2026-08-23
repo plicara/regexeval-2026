@@ -63,13 +63,16 @@
   "providers_resolved": [
     "OpenAI"
   ],
-  "python_version": "3.11.15",
-  "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-  "regexbench_version": "0.4.0",
+  "python_version": "3.11.16",
+  "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+  "regexbench_version": "0.4.1",
   "response_failures": 0,
   "table": "gpt-5.6-luna\n12 tasks, 12 answered\n  pass@1               33.3%\n  dfa-eq@1              0.0%  (whole corpus \u2014 a lower bound)\n  dfa-eq@1 (decided)    0.0%  (engine limits excluded \u2014 model only)\n  exact@1               0.0%\n  usable@1             16.7%\n  vulnerable@1          0.0%  (lower is better)\n  5 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
   "tasks_answered": 12,
   "tasks_attempted": 12,
+  "tasks_scored": 12,
+  "tasks_short_of_k": 0,
+  "tasks_short_of_k_detail": [],
   "temperature": null,
   "wrapped_detail": {},
   "wrapped_responses": 0

@@ -34,12 +34,17 @@ LINGUA_FRANCA_COMMIT = "a75bd51713d14aa9b48c32e103a3da500854f518"
 PREDICTIONS_DIR = REPO / "predictions"
 RESULTS_DIR = REPO / "results"
 
-# The scoring engine. 0.4.0 reached PyPI on 2026-08-11, after this run was
-# collected, so the Makefile now pins the release rather than the commit --
-# but both are still recorded with every result, because the commit is what
-# the published numbers were actually produced by.
-REGEXBENCH_COMMIT = "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206"
-REGEXBENCH_VERSION = "0.4.0"
+# The scoring engine. Both the release and the commit are recorded with every
+# result, because the commit is what the published numbers were produced by.
+#
+# 0.4.1 fixes the defect that made the first published table wrong: pass_at_k
+# credited a full pass to any task with fewer than k samples, which inflated
+# exactly the two models that had lost the most samples and moved one of them
+# two places. score.py has excluded short tasks since it was found; 0.4.1
+# makes the estimator refuse them outright, so the guard now exists on both
+# sides of the boundary.
+REGEXBENCH_COMMIT = "ff25e6a5ef463141ae95d512cd43a214e4e7b111"
+REGEXBENCH_VERSION = "0.4.1"
 
 # The date each published run was collected. Prose in README/METHODOLOGY says
 # it too, but the site generator needs it mechanically: a workflow that

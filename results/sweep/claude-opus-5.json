@@ -244,9 +244,9 @@
   "providers_resolved": [
     "Anthropic"
   ],
-  "python_version": "3.11.15",
-  "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-  "regexbench_version": "0.4.0",
+  "python_version": "3.11.16",
+  "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+  "regexbench_version": "0.4.1",
   "response_failures": 36,
   "table": "claude-opus-5\n432 tasks, 432 answered\n  pass@3               46.1%\n  dfa-eq@3             11.6%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   15.2%  (engine limits excluded \u2014 model only)\n  exact@3               2.8%\n  usable@3             20.8%\n  vulnerable@3         13.2%  (lower is better)\n  104 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
   "tasks_answered": 1314,

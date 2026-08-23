@@ -4,11 +4,13 @@
 >
 > **The name is wrong: this is a study, not a leaderboard.**
 > [`ARTICLE.md`](ARTICLE.md) is the current statement of what this work
-> claims, and its "What we are not claiming" section is explicit: *"We
-> started out building a leaderboard. We are not publishing one. [...] Bands
-> are defensible. A numbered list from one to eleven is not."* 62% of the
-> tasks give every model the identical result; only 167 of 450 separate them
-> at all. **Read the table below as a banding, not a ranking.**
+> claims, and its "What we are not claiming" section is explicit: *"We are
+> not publishing a leaderboard. [...] Bands are defensible. A numbered list
+> from one to eleven is not."* 62% of the
+> tasks give every model the identical result; only 162 of the 421 tasks all
+> eleven models answered in full separate them at all. **The table below is grouped
+> into bands for that reason**, and the
+> order inside a band is alphabetical and means nothing.
 >
 > The three defects the 2026-08-19 note listed have been fixed, and the
 > figures here are regenerated from the corrected scores:
@@ -16,10 +18,11 @@
 > 1. `regexbench.harness.pass_at_k` scored any task with **fewer than `k`
 >    samples** as a full pass ([regexbench#8](https://github.com/plicara/regexbench/issues/8)).
 >    Short-sample tasks are now excluded from the `@k` estimate. `kimi-k3`
->    `usable@3` 24.8 → 23.8, `claude-opus-5` 23.0 → 20.8, moving opus from
->    second to fourth. **The fix is local to `runner/score.py`; the upstream
->    issue is still open**, and `REGEXBENCH_COMMIT` still records the
->    unpatched engine.
+>    `usable@3` 24.8 → 23.8, `claude-opus-5` 23.0 → 20.8. Fixed upstream too:
+>    the issue is closed, the pin is `regexbench==0.4.1`, and the estimator
+>    now refuses `n < k` rather than crediting it. Rescoring against the
+>    patched engine moved no number here, because `runner/score.py` had
+>    already been excluding those tasks.
 > 2. **48.3%** of `usable` credits rest on an **UNDECIDABLE** equivalence
 >    verdict rather than demonstrated equivalence. Measured, reported per
 >    model, and given its own section in the paper — it is a reason to
@@ -52,17 +55,20 @@ correction below.
 <!-- generated: leaderboard -->
 | Model | usable@3 | pass@3 | vulnerable@3 | tasks | failed | $/request |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **Distinguishably ahead of at least one model, behind none** | | | | | | |
+| `anthropic/claude-opus-5` | **20.8%** | 46.1% | 13.2% | 432 | 36/1350 | $0.002514 |
 | `moonshotai/kimi-k3` | **23.8%** | 46.5% | 12.9% | 441 | 16/1350 | $0.001328 |
 | `qwen/qwen3.6-max-preview` | **21.6%** | 42.4% | 9.1% | 450 | 0/1350 | $0.000388 |
-| `openai/gpt-5.6-sol` | **20.9%** | 42.1% | 10.0% | 449 | 1/1350 | $0.002108 |
-| `anthropic/claude-opus-5` | **20.8%** | 46.1% | 13.2% | 432 | 36/1350 | $0.002514 |
+| **No comparison against any other model resolves** | | | | | | |
 | `deepseek/deepseek-v4-flash-0731` | **19.8%** | 38.0% | 12.0% | 450 | 0/1350 | $0.000026 |
-| `qwen/qwen3.6-plus` | **19.8%** | 39.8% | 9.8% | 450 | 0/1350 | $0.000121 |
-| `z-ai/glm-5.2` | **18.7%** | 42.4% | 14.2% | 450 | 0/1350 | $0.000158 |
-| `openai/gpt-5.6-terra` | **18.7%** | 42.2% | 12.0% | 450 | 0/1350 | $0.000406 |
-| `openai/gpt-5.6-luna` | **18.5%** | 39.2% | 11.6% | 449 | 1/1350 | $0.000043 |
+| `openai/gpt-5.6-sol` | **20.9%** | 42.1% | 10.0% | 449 | 1/1350 | $0.002108 |
+| **Distinguishably behind at least one model, ahead of none** | | | | | | |
 | `anthropic/claude-sonnet-5` | **18.0%** | 40.7% | 10.9% | 450 | 0/1350 | $0.000932 |
 | `google/gemini-3.1-flash-lite` | **17.1%** | 38.7% | 12.0% | 450 | 0/1350 | $0.000090 |
+| `z-ai/glm-5.2` | **18.7%** | 42.4% | 14.2% | 450 | 0/1350 | $0.000158 |
+| `openai/gpt-5.6-luna` | **18.5%** | 39.2% | 11.6% | 449 | 1/1350 | $0.000043 |
+| `openai/gpt-5.6-terra` | **18.7%** | 42.2% | 12.0% | 450 | 0/1350 | $0.000406 |
+| `qwen/qwen3.6-plus` | **19.8%** | 39.8% | 9.8% | 450 | 0/1350 | $0.000121 |
 <!-- /generated -->
 
 **Three numbers, one story.** `pass@3` is what other benchmarks report —
@@ -71,12 +77,12 @@ made to hang. `usable@3` is what survives once you remove the vulnerable
 patterns *and* the ones provably describing a different language than the
 reference.
 
-Two things worth noticing more than the ranking:
+Two things worth noticing more than which band a model is in:
 
-- **The spread is narrow — 17.1% to 23.8%.** Eleven models across a 100×
+- **The spread is narrow — 17.1% to 23.8%.** Eleven models across a 98×
   price range land within seven points of each other.
 - **`deepseek-v4-flash-0731` costs $0.000026 per request and scores 19.8%.
-  `claude-opus-5` costs $0.002514 — 97× more — and scores 20.8%.** One point
+  `claude-opus-5` costs $0.002514 — 98× more — and scores 20.8%.** One point
   for two orders of magnitude.
 
 The `tasks` column is the number entering each model's `@3` estimate. Tasks
@@ -236,9 +242,15 @@ were refused on one sample and answered on the next two — same prompt,
 same model, same settings. `k=3` sampling surfaced that; `k=1` would have
 recorded it as a flat failure.
 
+**Ten further calls** came back HTTP-successful with no extractable pattern —
+nine a bare code fence, one a pattern followed by an unmatched closing fence
+(seven `claude-opus-5`, two `kimi-k3`, one `gpt-5.6-luna`). They are counted
+as failures rather than scored as empty patterns.
+
 The remaining failures: 11 calls hit the account's spending limit (see
 below) and 4 came back without a resolved provider, which we reject rather
-than score, because a row without provenance is not reproducible.
+than score, because a row without provenance is not reproducible. That is
+29 + 10 + 11 + 4 = 54.
 
 ## Known gaps in this run
 
@@ -267,16 +279,17 @@ than score, because a row without provenance is not reproducible.
 predictions/   every raw model response — the evidence
 results/       scores, recomputed from predictions/ by CI
 runner/        the OpenRouter client, scorer, auditor
-METHODOLOGY.md how it was run and every judgement call
+ARTICLE.md     the write-up, and every judgement call in context
 APPENDIX.md    the harder metrics and the honest limitations
+paper/         the full technical treatment, built from results/
 ```
 
 Scoring by [`regexbench`](https://github.com/plicara/regexbench)
-(Apache-2.0), pinned to `regexbench==0.4.0` on PyPI, which is commit
-`412eaa95`; both are recorded in every result file. Corpus:
+(Apache-2.0), pinned to `regexbench==0.4.1` on PyPI, which is commit
+`ff25e6a5`; both are recorded in every result file. Corpus:
 [Re(gEx|DoS)Eval](https://github.com/s2e-lab/RegexEval), not redistributed
 here — `make setup` fetches it.
 
 ## License
 
-Code Apache-2.0.
+Code [Apache-2.0](LICENSE).

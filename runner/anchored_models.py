@@ -34,6 +34,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import random
 import re
 import warnings
 import sys
@@ -97,6 +98,30 @@ def first_sample_per_task(model: str, run: str) -> dict[str, str]:
     return out
 
 
+def cluster_ci(per_task: dict, iterations: int = 10000, seed: int = 20260812):
+    """95%% interval for the pooled rate, resampling tasks rather than patterns.
+
+    Each draw takes a task and, with it, every model's answer to that task, so
+    the correlation between models on a shared item is carried into the
+    interval instead of being assumed away.
+    """
+    rng = random.Random(seed)
+    tasks = sorted({t for m in per_task for t in per_task[m]})
+    by_task = {t: [per_task[m][t] for m in per_task if t in per_task[m]] for t in tasks}
+    n = len(tasks)
+    draws = []
+    for _ in range(iterations):
+        hits = total = 0
+        for _ in range(n):
+            outcomes = by_task[tasks[rng.randrange(n)]]
+            hits += sum(outcomes)
+            total += len(outcomes)
+        draws.append(100 * hits / total if total else 0.0)
+    draws.sort()
+    lo, hi = draws[int(0.025 * iterations)], draws[int(0.975 * iterations)]
+    return [round(lo, 1), round(hi, 1)]
+
+
 def two_proportion_z(v1, n1, v2, n2):
     """Is the difference between two independent rates distinguishable?
 
@@ -148,6 +173,21 @@ def main():
         r = results["models"][m]
         print(f"{m:26s} " + "  ".join(
             f"{k} {r[k]['rate_pct']:5.1f}% (n={r[k]['n']:4d})" for k in subsets), flush=True)
+
+    # Per-(model, task) outcomes for the anchored-output row. The pooled row is
+    # eleven models answering the same tasks, so a binomial interval over the
+    # pooled patterns treats shared task difficulty as independent draws and
+    # comes out too narrow -- the error this paper corrects elsewhere. Saved so
+    # the interval can be resampled over tasks instead.
+    per_task: dict[str, dict[str, bool]] = {}
+    for m in models:
+        anchored = {t: p for t, p in sorted(samples[m].items()) if ANCHORED.match(p)}
+        with ProcessPoolExecutor(max_workers=WORKERS) as pool:
+            verdicts = list(pool.map(screen_one, list(anchored.values()), chunksize=16))
+        per_task[m] = {t: v != "Risk.SAFE"
+                       for t, v in zip(anchored, verdicts) if not v.startswith("ERROR")}
+    results["per_task_outputs"] = per_task
+    results["pooled"]["outputs_cluster_ci95_pct"] = cluster_ci(per_task)
 
     for key in subsets:
         results["pooled"][key] = tally(pooled[key])

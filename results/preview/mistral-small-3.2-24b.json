@@ -99,9 +99,9 @@
     "require_parameters": true
   },
   "providers_resolved": [],
-  "python_version": "3.11.15",
-  "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-  "regexbench_version": "0.4.0",
+  "python_version": "3.11.16",
+  "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+  "regexbench_version": "0.4.1",
   "response_failures": 10,
   "table": null,
   "tasks_answered": 0,

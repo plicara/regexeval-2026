@@ -1,4 +1,107 @@
 {
+  "common_tasks": {
+    "pass": 421,
+    "usable": 421,
+    "vulnerable": 421
+  },
+  "discriminative_tasks": {
+    "pass": 186,
+    "usable": 162,
+    "vulnerable": 94
+  },
+  "groups": [
+    {
+      "key": "ahead",
+      "label": "Distinguishably ahead of at least one model, behind none",
+      "models": [
+        "claude-opus-5",
+        "kimi-k3",
+        "qwen3.6-max-preview"
+      ],
+      "separations": {
+        "claude-opus-5": {
+          "ahead_of": 1,
+          "behind": 0
+        },
+        "kimi-k3": {
+          "ahead_of": 6,
+          "behind": 0
+        },
+        "qwen3.6-max-preview": {
+          "ahead_of": 2,
+          "behind": 0
+        }
+      }
+    },
+    {
+      "key": "unresolved",
+      "label": "No comparison against any other model resolves",
+      "models": [
+        "deepseek-v4-flash-0731",
+        "gpt-5.6-sol"
+      ],
+      "separations": {
+        "deepseek-v4-flash-0731": {
+          "ahead_of": 0,
+          "behind": 0
+        },
+        "gpt-5.6-sol": {
+          "ahead_of": 0,
+          "behind": 0
+        }
+      }
+    },
+    {
+      "key": "behind",
+      "label": "Distinguishably behind at least one model, ahead of none",
+      "models": [
+        "claude-sonnet-5",
+        "gemini-3.1-flash-lite",
+        "glm-5.2",
+        "gpt-5.6-luna",
+        "gpt-5.6-terra",
+        "qwen3.6-plus"
+      ],
+      "separations": {
+        "claude-sonnet-5": {
+          "ahead_of": 0,
+          "behind": 2
+        },
+        "gemini-3.1-flash-lite": {
+          "ahead_of": 0,
+          "behind": 3
+        },
+        "glm-5.2": {
+          "ahead_of": 0,
+          "behind": 1
+        },
+        "gpt-5.6-luna": {
+          "ahead_of": 0,
+          "behind": 1
+        },
+        "gpt-5.6-terra": {
+          "ahead_of": 0,
+          "behind": 1
+        },
+        "qwen3.6-plus": {
+          "ahead_of": 0,
+          "behind": 1
+        }
+      }
+    }
+  ],
+  "groups_fully_separated": false,
+  "headline_metric": "usable",
+  "identical_pct": {
+    "pass": 56,
+    "usable": 62,
+    "vulnerable": 78
+  },
+  "identical_tasks": {
+    "pass": 235,
+    "usable": 259,
+    "vulnerable": 327
+  },
   "iterations": 10000,
   "models": {
     "claude-opus-5": {
@@ -155,6 +258,565 @@
         0.12666666666666668
       ]
     }
+  },
+  "pairs": 55,
+  "pairwise": {
+    "claude-opus-5 vs claude-sonnet-5": {
+      "better": "claude-opus-5",
+      "ci95": [
+        -0.004750593824228017,
+        0.07125890736342042
+      ],
+      "diff": 0.0332541567695962,
+      "resolved": false,
+      "tasks_disagreed": 64
+    },
+    "claude-opus-5 vs deepseek-v4-flash-0731": {
+      "better": "claude-opus-5",
+      "ci95": [
+        -0.030878859857482205,
+        0.0498812351543943
+      ],
+      "diff": 0.009501187648456061,
+      "resolved": false,
+      "tasks_disagreed": 74
+    },
+    "claude-opus-5 vs gemini-3.1-flash-lite": {
+      "better": "claude-opus-5",
+      "ci95": [
+        0.009501187648456061,
+        0.0807600950118765
+      ],
+      "diff": 0.045130641330166255,
+      "resolved": true,
+      "tasks_disagreed": 63
+    },
+    "claude-opus-5 vs glm-5.2": {
+      "better": "claude-opus-5",
+      "ci95": [
+        -0.014251781472684077,
+        0.0665083135391924
+      ],
+      "diff": 0.02612826603325416,
+      "resolved": false,
+      "tasks_disagreed": 75
+    },
+    "claude-opus-5 vs gpt-5.6-luna": {
+      "better": "claude-opus-5",
+      "ci95": [
+        -0.011876484560570055,
+        0.06413301662707838
+      ],
+      "diff": 0.02612826603325416,
+      "resolved": false,
+      "tasks_disagreed": 67
+    },
+    "claude-opus-5 vs gpt-5.6-sol": {
+      "better": "claude-opus-5",
+      "ci95": [
+        -0.030878859857482177,
+        0.04038004750593824
+      ],
+      "diff": 0.004750593824228017,
+      "resolved": false,
+      "tasks_disagreed": 58
+    },
+    "claude-opus-5 vs gpt-5.6-terra": {
+      "better": "claude-opus-5",
+      "ci95": [
+        -0.009501187648456061,
+        0.06413301662707838
+      ],
+      "diff": 0.02612826603325416,
+      "resolved": false,
+      "tasks_disagreed": 63
+    },
+    "claude-opus-5 vs qwen3.6-plus": {
+      "better": "claude-opus-5",
+      "ci95": [
+        -0.02612826603325416,
+        0.05225653206650829
+      ],
+      "diff": 0.011876484560570055,
+      "resolved": false,
+      "tasks_disagreed": 71
+    },
+    "claude-sonnet-5 vs gemini-3.1-flash-lite": {
+      "better": "claude-sonnet-5",
+      "ci95": [
+        -0.02612826603325416,
+        0.0498812351543943
+      ],
+      "diff": 0.011876484560570055,
+      "resolved": false,
+      "tasks_disagreed": 67
+    },
+    "deepseek-v4-flash-0731 vs claude-sonnet-5": {
+      "better": "deepseek-v4-flash-0731",
+      "ci95": [
+        -0.007125890736342039,
+        0.05463182897862234
+      ],
+      "diff": 0.02375296912114014,
+      "resolved": false,
+      "tasks_disagreed": 44
+    },
+    "deepseek-v4-flash-0731 vs gemini-3.1-flash-lite": {
+      "better": "deepseek-v4-flash-0731",
+      "ci95": [
+        0.0,
+        0.07125890736342044
+      ],
+      "diff": 0.035629453681710194,
+      "resolved": false,
+      "tasks_disagreed": 59
+    },
+    "deepseek-v4-flash-0731 vs glm-5.2": {
+      "better": "deepseek-v4-flash-0731",
+      "ci95": [
+        -0.019002375296912122,
+        0.05225653206650832
+      ],
+      "diff": 0.0166270783847981,
+      "resolved": false,
+      "tasks_disagreed": 57
+    },
+    "deepseek-v4-flash-0731 vs gpt-5.6-luna": {
+      "better": "deepseek-v4-flash-0731",
+      "ci95": [
+        -0.021377672209026144,
+        0.05463182897862234
+      ],
+      "diff": 0.0166270783847981,
+      "resolved": false,
+      "tasks_disagreed": 67
+    },
+    "deepseek-v4-flash-0731 vs gpt-5.6-terra": {
+      "better": "deepseek-v4-flash-0731",
+      "ci95": [
+        -0.019002375296912122,
+        0.05225653206650832
+      ],
+      "diff": 0.0166270783847981,
+      "resolved": false,
+      "tasks_disagreed": 61
+    },
+    "deepseek-v4-flash-0731 vs qwen3.6-plus": {
+      "better": "deepseek-v4-flash-0731",
+      "ci95": [
+        -0.030878859857482177,
+        0.0332541567695962
+      ],
+      "diff": 0.0023752969121139944,
+      "resolved": false,
+      "tasks_disagreed": 49
+    },
+    "glm-5.2 vs claude-sonnet-5": {
+      "better": "glm-5.2",
+      "ci95": [
+        -0.030878859857482177,
+        0.04513064133016628
+      ],
+      "diff": 0.007125890736342039,
+      "resolved": false,
+      "tasks_disagreed": 65
+    },
+    "glm-5.2 vs gemini-3.1-flash-lite": {
+      "better": "glm-5.2",
+      "ci95": [
+        -0.0166270783847981,
+        0.054631828978622315
+      ],
+      "diff": 0.019002375296912094,
+      "resolved": false,
+      "tasks_disagreed": 58
+    },
+    "glm-5.2 vs gpt-5.6-luna": {
+      "better": "glm-5.2",
+      "ci95": [
+        -0.0332541567695962,
+        0.035629453681710194
+      ],
+      "diff": 0.0,
+      "resolved": false,
+      "tasks_disagreed": 56
+    },
+    "glm-5.2 vs gpt-5.6-terra": {
+      "better": "glm-5.2",
+      "ci95": [
+        -0.03562945368171022,
+        0.03562945368171022
+      ],
+      "diff": 0.0,
+      "resolved": false,
+      "tasks_disagreed": 58
+    },
+    "gpt-5.6-luna vs claude-sonnet-5": {
+      "better": "gpt-5.6-luna",
+      "ci95": [
+        -0.028503562945368183,
+        0.04275534441805226
+      ],
+      "diff": 0.007125890736342039,
+      "resolved": false,
+      "tasks_disagreed": 61
+    },
+    "gpt-5.6-luna vs gemini-3.1-flash-lite": {
+      "better": "gpt-5.6-luna",
+      "ci95": [
+        -0.0166270783847981,
+        0.05463182897862234
+      ],
+      "diff": 0.019002375296912094,
+      "resolved": false,
+      "tasks_disagreed": 60
+    },
+    "gpt-5.6-luna vs gpt-5.6-terra": {
+      "better": "gpt-5.6-luna",
+      "ci95": [
+        -0.0332541567695962,
+        0.0332541567695962
+      ],
+      "diff": 0.0,
+      "resolved": false,
+      "tasks_disagreed": 48
+    },
+    "gpt-5.6-sol vs claude-sonnet-5": {
+      "better": "gpt-5.6-sol",
+      "ci95": [
+        -0.007125890736342039,
+        0.06413301662707838
+      ],
+      "diff": 0.028503562945368183,
+      "resolved": false,
+      "tasks_disagreed": 60
+    },
+    "gpt-5.6-sol vs deepseek-v4-flash-0731": {
+      "better": "gpt-5.6-sol",
+      "ci95": [
+        -0.0332541567695962,
+        0.04275534441805226
+      ],
+      "diff": 0.004750593824228044,
+      "resolved": false,
+      "tasks_disagreed": 68
+    },
+    "gpt-5.6-sol vs gemini-3.1-flash-lite": {
+      "better": "gpt-5.6-sol",
+      "ci95": [
+        -0.0,
+        0.08076009501187648
+      ],
+      "diff": 0.04038004750593824,
+      "resolved": false,
+      "tasks_disagreed": 75
+    },
+    "gpt-5.6-sol vs glm-5.2": {
+      "better": "gpt-5.6-sol",
+      "ci95": [
+        -0.019002375296912094,
+        0.05938242280285036
+      ],
+      "diff": 0.021377672209026144,
+      "resolved": false,
+      "tasks_disagreed": 71
+    },
+    "gpt-5.6-sol vs gpt-5.6-luna": {
+      "better": "gpt-5.6-sol",
+      "ci95": [
+        -0.011876484560570083,
+        0.05463182897862234
+      ],
+      "diff": 0.021377672209026144,
+      "resolved": false,
+      "tasks_disagreed": 51
+    },
+    "gpt-5.6-sol vs gpt-5.6-terra": {
+      "better": "gpt-5.6-sol",
+      "ci95": [
+        -0.009501187648456061,
+        0.05225653206650832
+      ],
+      "diff": 0.021377672209026144,
+      "resolved": false,
+      "tasks_disagreed": 47
+    },
+    "gpt-5.6-sol vs qwen3.6-plus": {
+      "better": "gpt-5.6-sol",
+      "ci95": [
+        -0.030878859857482177,
+        0.04513064133016628
+      ],
+      "diff": 0.007125890736342039,
+      "resolved": false,
+      "tasks_disagreed": 67
+    },
+    "gpt-5.6-terra vs claude-sonnet-5": {
+      "better": "gpt-5.6-terra",
+      "ci95": [
+        -0.02612826603325416,
+        0.038004750593824244
+      ],
+      "diff": 0.007125890736342039,
+      "resolved": false,
+      "tasks_disagreed": 49
+    },
+    "gpt-5.6-terra vs gemini-3.1-flash-lite": {
+      "better": "gpt-5.6-terra",
+      "ci95": [
+        -0.019002375296912122,
+        0.057007125890736365
+      ],
+      "diff": 0.019002375296912094,
+      "resolved": false,
+      "tasks_disagreed": 68
+    },
+    "kimi-k3 vs claude-opus-5": {
+      "better": "kimi-k3",
+      "ci95": [
+        -0.014251781472684077,
+        0.06175771971496438
+      ],
+      "diff": 0.02375296912114014,
+      "resolved": false,
+      "tasks_disagreed": 68
+    },
+    "kimi-k3 vs claude-sonnet-5": {
+      "better": "kimi-k3",
+      "ci95": [
+        0.02375296912114014,
+        0.09263657957244656
+      ],
+      "diff": 0.05700712589073634,
+      "resolved": true,
+      "tasks_disagreed": 56
+    },
+    "kimi-k3 vs deepseek-v4-flash-0731": {
+      "better": "kimi-k3",
+      "ci95": [
+        -0.002375296912114022,
+        0.07125890736342042
+      ],
+      "diff": 0.0332541567695962,
+      "resolved": false,
+      "tasks_disagreed": 62
+    },
+    "kimi-k3 vs gemini-3.1-flash-lite": {
+      "better": "kimi-k3",
+      "ci95": [
+        0.0332541567695962,
+        0.10451306413301664
+      ],
+      "diff": 0.06888361045130639,
+      "resolved": true,
+      "tasks_disagreed": 61
+    },
+    "kimi-k3 vs glm-5.2": {
+      "better": "kimi-k3",
+      "ci95": [
+        0.014251781472684105,
+        0.08551068883610452
+      ],
+      "diff": 0.0498812351543943,
+      "resolved": true,
+      "tasks_disagreed": 59
+    },
+    "kimi-k3 vs gpt-5.6-luna": {
+      "better": "kimi-k3",
+      "ci95": [
+        0.011876484560570083,
+        0.08788598574821854
+      ],
+      "diff": 0.0498812351543943,
+      "resolved": true,
+      "tasks_disagreed": 67
+    },
+    "kimi-k3 vs gpt-5.6-sol": {
+      "better": "kimi-k3",
+      "ci95": [
+        -0.011876484560570055,
+        0.06888361045130642
+      ],
+      "diff": 0.028503562945368155,
+      "resolved": false,
+      "tasks_disagreed": 72
+    },
+    "kimi-k3 vs gpt-5.6-terra": {
+      "better": "kimi-k3",
+      "ci95": [
+        0.014251781472684105,
+        0.08551068883610452
+      ],
+      "diff": 0.0498812351543943,
+      "resolved": true,
+      "tasks_disagreed": 59
+    },
+    "kimi-k3 vs qwen3.6-max-preview": {
+      "better": "kimi-k3",
+      "ci95": [
+        -0.014251781472684105,
+        0.04988123515439427
+      ],
+      "diff": 0.0166270783847981,
+      "resolved": false,
+      "tasks_disagreed": 47
+    },
+    "kimi-k3 vs qwen3.6-plus": {
+      "better": "kimi-k3",
+      "ci95": [
+        0.004750593824228017,
+        0.06888361045130642
+      ],
+      "diff": 0.035629453681710194,
+      "resolved": true,
+      "tasks_disagreed": 47
+    },
+    "qwen3.6-max-preview vs claude-opus-5": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        -0.030878859857482205,
+        0.04513064133016628
+      ],
+      "diff": 0.007125890736342039,
+      "resolved": false,
+      "tasks_disagreed": 69
+    },
+    "qwen3.6-max-preview vs claude-sonnet-5": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        0.007125890736342039,
+        0.07363420427553447
+      ],
+      "diff": 0.04038004750593824,
+      "resolved": true,
+      "tasks_disagreed": 55
+    },
+    "qwen3.6-max-preview vs deepseek-v4-flash-0731": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        -0.019002375296912122,
+        0.05225653206650832
+      ],
+      "diff": 0.0166270783847981,
+      "resolved": false,
+      "tasks_disagreed": 59
+    },
+    "qwen3.6-max-preview vs gemini-3.1-flash-lite": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        0.019002375296912122,
+        0.08551068883610452
+      ],
+      "diff": 0.05225653206650829,
+      "resolved": true,
+      "tasks_disagreed": 54
+    },
+    "qwen3.6-max-preview vs glm-5.2": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        -0.0,
+        0.0665083135391924
+      ],
+      "diff": 0.0332541567695962,
+      "resolved": false,
+      "tasks_disagreed": 50
+    },
+    "qwen3.6-max-preview vs gpt-5.6-luna": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        -0.0023752969121139944,
+        0.06888361045130639
+      ],
+      "diff": 0.0332541567695962,
+      "resolved": false,
+      "tasks_disagreed": 56
+    },
+    "qwen3.6-max-preview vs gpt-5.6-sol": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        -0.02612826603325416,
+        0.047505938242280304
+      ],
+      "diff": 0.011876484560570055,
+      "resolved": false,
+      "tasks_disagreed": 65
+    },
+    "qwen3.6-max-preview vs gpt-5.6-terra": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        -0.0,
+        0.06650831353919243
+      ],
+      "diff": 0.0332541567695962,
+      "resolved": false,
+      "tasks_disagreed": 54
+    },
+    "qwen3.6-max-preview vs qwen3.6-plus": {
+      "better": "qwen3.6-max-preview",
+      "ci95": [
+        -0.014251781472684077,
+        0.05225653206650832
+      ],
+      "diff": 0.019002375296912094,
+      "resolved": false,
+      "tasks_disagreed": 50
+    },
+    "qwen3.6-plus vs claude-sonnet-5": {
+      "better": "qwen3.6-plus",
+      "ci95": [
+        -0.011876484560570083,
+        0.05463182897862234
+      ],
+      "diff": 0.021377672209026144,
+      "resolved": false,
+      "tasks_disagreed": 53
+    },
+    "qwen3.6-plus vs gemini-3.1-flash-lite": {
+      "better": "qwen3.6-plus",
+      "ci95": [
+        -0.0,
+        0.06650831353919243
+      ],
+      "diff": 0.0332541567695962,
+      "resolved": false,
+      "tasks_disagreed": 54
+    },
+    "qwen3.6-plus vs glm-5.2": {
+      "better": "qwen3.6-plus",
+      "ci95": [
+        -0.021377672209026116,
+        0.047505938242280304
+      ],
+      "diff": 0.014251781472684105,
+      "resolved": false,
+      "tasks_disagreed": 54
+    },
+    "qwen3.6-plus vs gpt-5.6-luna": {
+      "better": "qwen3.6-plus",
+      "ci95": [
+        -0.021377672209026144,
+        0.0498812351543943
+      ],
+      "diff": 0.014251781472684105,
+      "resolved": false,
+      "tasks_disagreed": 62
+    },
+    "qwen3.6-plus vs gpt-5.6-terra": {
+      "better": "qwen3.6-plus",
+      "ci95": [
+        -0.019002375296912122,
+        0.04750593824228028
+      ],
+      "diff": 0.014251781472684105,
+      "resolved": false,
+      "tasks_disagreed": 52
+    }
+  },
+  "pairwise_resolved": 9,
+  "resolved_at_95": {
+    "pass": 16,
+    "usable": 9,
+    "vulnerable": 9
   },
   "run": "sweep",
   "seed": 20260812,

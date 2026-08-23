@@ -107,6 +107,11 @@ if not rows:
     raise SystemExit("no per-model results found; run: make score RUN=sweep")
 rows.sort(key=lambda r: -r["u"])
 
+# The corpus subset, not any one model's denominator. `rows[0]` is whichever
+# model leads on usable@3, and its @k denominator (441 for kimi-k3) is not the
+# study's task count -- models answered 432 to 450 of a 450-task subset.
+_corpus_tasks = max(r["scored"] for r in rows if r["scored"])
+
 # Paired-bootstrap intervals, clustered on task. Independent binomial intervals
 # are the wrong estimator for a design where every model answers every item,
 # which is the paper's own argument; the main table should not use them either.
@@ -207,7 +212,16 @@ write("tab_decomp.tex", "lrrrrrr",
       r"Model & \pass{}@3 & $-$safety & C\&S@3 & $-$equiv. & \usable{}@3 & vuln.$\mid$correct \\",
       body)
 
+_costs = sorted(rows, key=lambda r: r["cpt"])
 _MACROS = {
+    "exactlo": f"{min(r['ex'] for r in rows)*100:.1f}",
+    "exacthi": f"{max(r['ex'] for r in rows)*100:.1f}",
+    "bandwidth": f"{(max(r['u'] for r in rows) - min(r['u'] for r in rows))*100:.1f}",
+    "cheapusable": f"{_costs[0]['u']*100:.1f}",
+    "dearusable": f"{_costs[-1]['u']*100:.1f}",
+    "costgap": f"{abs(_costs[-1]['u'] - _costs[0]['u'])*100:.1f}",
+    "passlo": f"{min(r['p'] for r in rows)*100:.1f}",
+    "passhi": f"{max(r['p'] for r in rows)*100:.1f}",
     "correctsamples": f"{corr_total:,}".replace(",", "{,}"),
     "correctvulnsamples": f"{corr_total - cs_total}",
     "vulngivencorrect": f"{pooled_vgc*100:.1f}",
@@ -217,7 +231,7 @@ _MACROS = {
 }
 
 xb = [
-    (r"This work (regex, ReDoS)", f"{rows[0]['scored']}",
+    (r"This work (regex, ReDoS)", f"{_corpus_tasks}",
      f"{mean([_at(ps[m],'pass',3)[0] for m in cs])*100:.0f}",
      f"{mean([_at(cs[m],'correct_secure',3)[0] for m in cs])*100:.0f}",
      f"{pooled_vgc*100:.0f}"),
@@ -264,7 +278,11 @@ cc = load(RESULTS / "cross_corpus_redos.json", "make setup-corpora && make cross
 
 def cc_row(label, written, block, bold=False):
     n = f"{block['n']:,}".replace(",", "{,}")
-    rate = f"{block['rate_pct']:.1f}\\% $\\pm$ {block['ci95_pct']:.1f}"
+    # The model row's patterns are eleven answers to shared tasks, so its
+    # interval is resampled over tasks and quoted as a range rather than as a
+    # symmetric +/- that would imply independent draws.
+    rate = (f"{block['rate_pct']:.1f}\\% {block['ci_override']}" if block.get("ci_override")
+            else f"{block['rate_pct']:.1f}\\% $\\pm$ {block['ci95_pct']:.1f}")
     if bold:
         label, written, n, rate = (f"\\textbf{{{label}}}", f"\\textbf{{{written}}}",
                                    n, f"\\textbf{{{rate}}}")
@@ -291,7 +309,12 @@ for label, written, key in (
     body.append(cc_row(label, written, cc["anchored"][key]))
 # The models under the identical restriction -- their own anchored outputs --
 # rather than the unrestricted rate an earlier draft put here.
-body.append(cc_row("This work, 11 models pooled", "---", anch["pooled"]["outputs"], bold=True))
+_models_row = dict(anch["pooled"]["outputs"])
+if "outputs_cluster_ci95_pct" in anch["pooled"]:
+    _lo, _hi = anch["pooled"]["outputs_cluster_ci95_pct"]
+    _MACROS["modelclusterlo"], _MACROS["modelclusterhi"] = f"{_lo:.1f}", f"{_hi:.1f}"
+    _models_row["ci_override"] = f"[{_lo:.1f}, {_hi:.1f}]"
+body.append(cc_row("This work, 11 models pooled", "---", _models_row, bold=True))
 body.append(cc_row("Production code", "run", cc["anchored"]["Production code, anchored"], bold=True))
 write("tab_crosscorpus.tex", "llrr",
       r"Population & Written to be & $n$ & vulnerable \\", body)
@@ -324,7 +347,7 @@ srp = [common[m]["pass_at_1"] for m in common]
 srv = [common[m]["vulnerable_at_1"] for m in common]
 write("tab_sr_compare.tex", "lcc",
       r" & Re(gEx$|$DoS)Eval & StructuredRegex \\", [
-    f"Tasks & {rows[0]['scored']} & {sr['common_subset_size']} \\\\",
+    f"Tasks & {_corpus_tasks} & {sr['common_subset_size']} \\\\",
     r"Reference used in scoring     & yes ($\dfaeq{}$) & no \\",
     r"\midrule",
     f"$\\pass{{}}@1$, range & {min(p1):.1f}--{max(p1):.1f}\\% & "
@@ -371,6 +394,43 @@ def wilson(k, n, z=1.96):
     return (max(0.0, centre - half) * 100, min(1.0, centre + half) * 100)
 
 
+pi = optional(RESULTS / "sweep/paired_intervals.json")
+if pi and "resolved_at_95" in pi:
+    r = pi["resolved_at_95"]
+    write("tab_paired.tex", "lr",
+          r"Procedure & pairs resolved at 95\% (of " + str(pi["pairs"]) + r") \\", [
+        r"Independent binomial intervals & 1 \\",
+        rf"Paired bootstrap, \usable{{}}@3 & {r['usable']} \\",
+        rf"Paired bootstrap, \pass{{}}@3 & {r['pass']} \\",
+        rf"Paired bootstrap, \vuln{{}}@3 & {r['vulnerable']} \\"])
+    _MACROS.update({
+        "resolvedusable": str(r["usable"]),
+        "resolvedpass": str(r["pass"]),
+        "resolvedvuln": str(r["vulnerable"]),
+        "identicalusable": str(pi["identical_pct"]["usable"]),
+        "identicalpass": str(pi["identical_pct"]["pass"]),
+        "identicalvuln": str(pi["identical_pct"]["vulnerable"]),
+        "commontasks": str(pi["common_tasks"]["usable"]),
+        "discriminative": str(pi["discriminative_tasks"]["usable"]),
+    })
+    # The worked example in sec:paired, generated so it cannot go stale.
+    ex = (pi.get("pairwise", {}).get("qwen3.6-max-preview vs gpt-5.6-sol")
+          or pi.get("pairwise", {}).get("gpt-5.6-sol vs qwen3.6-max-preview"))
+    if ex:
+        _MACROS.update({
+            "examplediff": f"{100 * ex['diff']:+.1f}",
+            "examplelo": f"{100 * ex['ci95'][0]:+.1f}",
+            "examplehi": f"{100 * ex['ci95'][1]:+.1f}",
+        })
+
+ds = optional(RESULTS / "difficulty_selection.json")
+if ds and ds.get("easy_minus_hard_pp") is not None:
+    _MACROS["easyvuln"] = f"{ds['easy']['pct']:.1f}"
+    _MACROS["hardvuln"] = f"{ds['hard']['pct']:.1f}"
+    _MACROS["easyhard"] = f"{ds['easy_minus_hard_pp']:+.1f}"
+    _MACROS["easyhardlo"] = f"{ds['easy_minus_hard_ci95'][0]:+.1f}"
+    _MACROS["easyhardhi"] = f"{ds['easy_minus_hard_ci95'][1]:+.1f}"
+
 cal = optional(RESULTS / "screen_calibration.json")
 if cal:
     body = []
@@ -408,6 +468,12 @@ for _pop, _key in (("Production code", "prod"), ("Stack Overflow", "so"),
         _MACROS[_key + "dropped"] = f"{drops[_pop]['dropped']:,}".replace(",", "{,}")
         _MACROS[_key + "droppedpct"] = f"{drops[_pop]['dropped_pct']:.1f}"
         _MACROS[_key + "pool"] = f"{drops[_pop]['pool']:,}".replace(",", "{,}")
+_MACROS["vgclo"] = f"{min(cond)*100:.1f}"
+_MACROS["vgchi"] = f"{max(cond)*100:.1f}"
+# The complement of the audit's model-fault rate, kept beside it so the two
+# cannot drift apart when the adjudication sample changes.
+_MACROS["auditcomplement"] = f"{100 - 14.6:.0f}"
+
 _dd = optional(RESULTS / "dialect_drop.json")
 if _dd:
     _MACROS["dropanchoredpct"] = f"{_dd['dropped_anchored_pct']:.1f}"
@@ -479,11 +545,47 @@ if cal and cal.get("recall_range_pct"):
         ("corrprod", cc["anchored"]["Production code, anchored"]["rate_pct"],
          "Production code"),
     ]
+    _corrected = {}
     for name, rate, population in _pairs:
         recall = _pops.get(population, {}).get("recall_pct")
         if recall:
-            _MACROS[name] = f"{rate / (recall / 100):.1f}"
+            _corrected[name] = rate / (recall / 100)
+            _MACROS[name] = f"{_corrected[name]:.1f}"
+    # The gaps the prose quotes, computed here so a rewritten paragraph cannot
+    # drift from the table it is describing.
+    _raw = dict(_pairs and {n: r for n, r, _ in _pairs})
+    if {"corrlib", "corrprod"} <= _corrected.keys():
+        _MACROS["gapraw"] = f"{_raw['corrlib'] - _raw['corrprod']:.1f}"
+        _MACROS["gapcorr"] = f"{_corrected['corrlib'] - _corrected['corrprod']:.1f}"
+        _MACROS["gapclosed"] = (
+            f"{(_raw['corrlib'] - _raw['corrprod']) - (_corrected['corrlib'] - _corrected['corrprod']):.1f}")
+    if {"corrmodels", "corrprod"} <= _corrected.keys():
+        _MACROS["modelprodraw"] = f"{_raw['corrmodels'] - _raw['corrprod']:.1f}"
+        _MACROS["modelprodcorr"] = f"{_corrected['corrmodels'] - _corrected['corrprod']:.1f}"
 if undec:
+    # Holm and Benjamini-Hochberg on the eleven McNemar tests. Eleven
+    # unadjusted comparisons in a paper about inferential care is not a
+    # defensible thing to leave to the reader.
+    if mcn:
+        ps = sorted(v["p_exact_two_sided"] for v in mcn["models"].values())
+        m = len(ps)
+        holm = 0
+        for i, pv in enumerate(ps):
+            if pv <= 0.05 / (m - i):
+                holm = i + 1
+            else:
+                break
+        bh = max((i + 1 for i, pv in enumerate(ps) if pv <= 0.05 * (i + 1) / m), default=0)
+        _MACROS["holmcount"] = str(holm)
+        _MACROS["bhcount"] = str(bh)
+        _MACROS["unadjustedcount"] = str(sum(1 for pv in ps if pv < 0.05))
+    _verdicts = {}
+    for block in undec["models"].values():
+        for k, v in (block.get("by_verdict") or {}).items():
+            _verdicts[k] = _verdicts.get(k, 0) + v
+    if _verdicts:
+        _MACROS["undecsplit"] = ", ".join(
+            f"{v} \\textsc{{{k.lower()[:5]}}}" for k, v in sorted(_verdicts.items(), key=lambda x: -x[1]))
     _MACROS["undecshare"] = f"{undec['pooled']['undec_supported_share_pct']:.0f}"
     _MACROS["undecsupported"] = f"{undec['pooled']['undec_supported']}"
     _MACROS["undecusable"] = f"{undec['pooled']['usable']}"

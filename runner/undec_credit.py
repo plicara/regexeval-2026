@@ -9,7 +9,7 @@ Equivalence is undecidable exactly when a pattern uses backreferences, so a
 model that reaches for one is scored *more* usable for having put its answer
 beyond checking.
 
-Between 82 and 133 of 450 tasks per model land there, so the question is not
+Between 78 and 133 of each model's scored tasks land there, so the question is not
 whether the asymmetry exists but whether it moves anything. The obvious test
 -- correlate a model's undecidable count against its `usable@3` -- answers
 no, and answers it misleadingly: undecidable credit and equivalence skill
@@ -28,6 +28,7 @@ import argparse
 import json
 import math
 import sys
+from collections import Counter
 import warnings
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
@@ -95,10 +96,19 @@ def _init(dataset_path: str):
 
 
 def _score_task(job):
-    """Was this task usable, and did anything actually prove equivalence?"""
+    """Was this task usable, did anything prove equivalence, and on what verdict?
+
+    The verdict breakdown matters because the harness counts UNSUPPORTED and
+    UNDECIDABLE together under one "undecided" column, and they are different
+    claims: UNDECIDABLE is a theorem about backreferences, UNSUPPORTED is this
+    engine declining a construct. Both receive the same free credit from
+    `usable`, so both belong in the accounting, but conflating them would let
+    an engine limitation be reported as a property of the language.
+    """
     task_name, patterns = job
     task = _TASKS[task_name]
     usable = proven = False
+    supported_by = None
     for pattern in patterns:
         try:
             rep = evaluate(pattern, task)
@@ -112,21 +122,31 @@ def _score_task(job):
         verdict = rep.equivalence.verdict.name if rep.equivalence is not None else "NONE"
         if verdict != "DIFFERENT":
             usable = True
+            if verdict != "EQUIVALENT" and supported_by is None:
+                supported_by = verdict
         if verdict == "EQUIVALENT":
             proven = True
-    return usable, proven
+    return usable, proven, supported_by
 
 
-def analyse(model: str, run: str) -> dict:
-    """usable@3 as reported, and under a proven-equivalence rule."""
-    jobs = sorted(samples_by_task(model, run).items())
+def analyse(model: str, run: str, k: int) -> dict:
+    """usable@3 as reported, and under a proven-equivalence rule.
+
+    Restricted to tasks with all k samples, which is the denominator the main
+    table uses. Scoring the short-sample tasks here instead would rebuild, in
+    a table written to criticise the composite, the exact denominator defect
+    the appendix documents.
+    """
+    jobs = [(t, ps) for t, ps in sorted(samples_by_task(model, run).items()) if len(ps) >= k]
     with ProcessPoolExecutor(max_workers=WORKERS, initializer=_init,
                              initargs=(str(config.require_dataset()),)) as pool:
         scored = list(pool.map(_score_task, jobs, chunksize=8))
     counts = {"tasks": len(scored),
-              "usable": sum(1 for u, _ in scored if u),
-              "proven": sum(1 for _, pr in scored if pr),
-              "undec_supported": sum(1 for u, pr in scored if u and not pr)}
+              "usable": sum(1 for u, _, _ in scored if u),
+              "proven": sum(1 for _, pr, _ in scored if pr),
+              "undec_supported": sum(1 for u, pr, _ in scored if u and not pr)}
+    counts["by_verdict"] = dict(Counter(
+        v for u, pr, v in scored if u and not pr and v is not None).most_common())
     n = counts["tasks"]
     counts["usable_pct"] = round(100 * counts["usable"] / n, 1)
     counts["proven_pct"] = round(100 * counts["proven"] / n, 1)
@@ -139,6 +159,8 @@ def analyse(model: str, run: str) -> dict:
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--run", default="sweep")
+    ap.add_argument("--k", type=int, default=3,
+                    help="tasks with fewer than k samples are excluded, as in the main table")
     args = ap.parse_args()
 
     models = sorted(p.stem for p in (config.PREDICTIONS_DIR / args.run).glob("*.jsonl"))
@@ -153,7 +175,7 @@ def main():
     print(f"{'model':26s} {'undec':>6s} {'usable@3':>9s} {'proven-EQ':>10s} "
           f"{'undec-supported':>16s}")
     for m in models:
-        r = analyse(m, args.run)
+        r = analyse(m, args.run, args.k)
         r["undecided"] = undecided.get(m)
         out["models"][m] = r
         print(f"{m:26s} {str(r['undecided']):>6s} {r['usable_pct']:8.1f}% "

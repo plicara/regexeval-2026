@@ -1,0 +1,93 @@
+{
+  "easy": {
+    "correct": 4830,
+    "pct": 7.1,
+    "vuln": 343
+  },
+  "easy_minus_hard_ci95": [
+    -12.2,
+    3.8
+  ],
+  "easy_minus_hard_pp": -3.6,
+  "hard": {
+    "correct": 439,
+    "pct": 10.7,
+    "vuln": 47
+  },
+  "models": 11,
+  "run": "sweep",
+  "strata": {
+    "0": {
+      "correct": 0,
+      "correct_vulnerable": 0,
+      "tasks": 171,
+      "vuln_given_correct_pct": null
+    },
+    "1": {
+      "correct": 39,
+      "correct_vulnerable": 4,
+      "tasks": 26,
+      "vuln_given_correct_pct": 10.3
+    },
+    "2": {
+      "correct": 57,
+      "correct_vulnerable": 5,
+      "tasks": 18,
+      "vuln_given_correct_pct": 8.8
+    },
+    "3": {
+      "correct": 54,
+      "correct_vulnerable": 0,
+      "tasks": 9,
+      "vuln_given_correct_pct": 0.0
+    },
+    "4": {
+      "correct": 151,
+      "correct_vulnerable": 36,
+      "tasks": 19,
+      "vuln_given_correct_pct": 23.8
+    },
+    "5": {
+      "correct": 138,
+      "correct_vulnerable": 2,
+      "tasks": 15,
+      "vuln_given_correct_pct": 1.4
+    },
+    "6": {
+      "correct": 255,
+      "correct_vulnerable": 25,
+      "tasks": 20,
+      "vuln_given_correct_pct": 9.8
+    },
+    "7": {
+      "correct": 331,
+      "correct_vulnerable": 29,
+      "tasks": 21,
+      "vuln_given_correct_pct": 8.8
+    },
+    "8": {
+      "correct": 263,
+      "correct_vulnerable": 15,
+      "tasks": 13,
+      "vuln_given_correct_pct": 5.7
+    },
+    "9": {
+      "correct": 464,
+      "correct_vulnerable": 35,
+      "tasks": 21,
+      "vuln_given_correct_pct": 7.5
+    },
+    "10": {
+      "correct": 956,
+      "correct_vulnerable": 107,
+      "tasks": 36,
+      "vuln_given_correct_pct": 11.2
+    },
+    "11": {
+      "correct": 2561,
+      "correct_vulnerable": 132,
+      "tasks": 81,
+      "vuln_given_correct_pct": 5.2
+    }
+  }
+}

@@ -67,13 +67,16 @@
     "providers_resolved": [
       "CoreWeave"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "deepseek-v4-flash-0731\n12 tasks, 12 answered\n  pass@3               33.3%\n  dfa-eq@3              0.0%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)    0.0%  (engine limits excluded \u2014 model only)\n  exact@3               0.0%\n  usable@3             33.3%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {
       "regexeval/3207": [
@@ -150,95 +153,16 @@
     "providers_resolved": [
       "Alibaba"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "qwen3.6-plus\n12 tasks, 12 answered\n  pass@3               41.7%\n  dfa-eq@3             16.7%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   22.2%  (engine limits excluded \u2014 model only)\n  exact@3              16.7%\n  usable@3             33.3%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
-    "temperature": null,
-    "wrapped_detail": {},
-    "wrapped_responses": 0
-  },
-  {
-    "completion_tokens_total": 1905,
-    "controls": {
-      "control/bad": {
-        "as_expected": true,
-        "base_task": "regexeval/133",
-        "pass@1": 0.0,
-        "pattern": "z{5}",
-        "usable@1": 0.0,
-        "vulnerable@1": 0.0
-      },
-      "control/good": {
-        "as_expected": true,
-        "base_task": "regexeval/1",
-        "pass@1": 1.0,
-        "pattern": "^\\d$",
-        "usable@1": 1.0,
-        "vulnerable@1": 0.0
-      },
-      "control/vulnerable": {
-        "as_expected": true,
-        "base_task": "regexeval/133",
-        "pass@1": 0.0,
-        "pattern": "(a+)+b",
-        "usable@1": 0.0,
-        "vulnerable@1": 1.0
-      }
-    },
-    "controls_all_as_expected": true,
-    "cost_usd_per_task": 0.00197653,
-    "cost_usd_total": 0.071155,
-    "dataset": "Re(gEx|DoS)Eval",
-    "failure_detail": [
-      {
-        "error": "empty content (reasoning may have consumed the token budget)",
-        "status": "parse_failure",
-        "task": "regexeval/1914"
-      }
-    ],
-    "k": 3,
-    "max_tokens": 400,
-    "metrics": {
-      "dfa-eq@3": 0.16666666666666666,
-      "dfa-eq@3 (decided)": 0.2222222222222222,
-      "exact@3": 0.16666666666666666,
-      "pass@3": 0.5,
-      "undecided": 3,
-      "usable@3": 0.25,
-      "vulnerable@3": 0.08333333333333333
-    },
-    "metrics_as_sent": {
-      "dfa-eq@3": 0.16666666666666666,
-      "dfa-eq@3 (decided)": 0.2222222222222222,
-      "exact@3": 0.16666666666666666,
-      "pass@3": 0.5,
-      "undecided": 3,
-      "usable@3": 0.25,
-      "vulnerable@3": 0.08333333333333333
-    },
-    "model": "claude-opus-5",
-    "model_requested": "anthropic/claude-opus-5",
-    "provider_requested": {
-      "allow_fallbacks": false,
-      "order": [
-        "Anthropic"
-      ],
-      "require_parameters": true
-    },
-    "providers_resolved": [
-      "Anthropic"
-    ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
-    "response_failures": 1,
-    "table": "claude-opus-5\n12 tasks, 12 answered\n  pass@3               50.0%\n  dfa-eq@3             16.7%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   22.2%  (engine limits excluded \u2014 model only)\n  exact@3              16.7%\n  usable@3             25.0%\n  vulnerable@3          8.3%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
-    "tasks_answered": 35,
-    "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -308,13 +232,103 @@
     "providers_resolved": [
       "Fireworks"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "kimi-k3\n12 tasks, 12 answered\n  pass@3               25.0%\n  dfa-eq@3              8.3%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   11.1%  (engine limits excluded \u2014 model only)\n  exact@3               8.3%\n  usable@3             25.0%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
+    "temperature": null,
+    "wrapped_detail": {},
+    "wrapped_responses": 0
+  },
+  {
+    "completion_tokens_total": 1905,
+    "controls": {
+      "control/bad": {
+        "as_expected": true,
+        "base_task": "regexeval/133",
+        "pass@1": 0.0,
+        "pattern": "z{5}",
+        "usable@1": 0.0,
+        "vulnerable@1": 0.0
+      },
+      "control/good": {
+        "as_expected": true,
+        "base_task": "regexeval/1",
+        "pass@1": 1.0,
+        "pattern": "^\\d$",
+        "usable@1": 1.0,
+        "vulnerable@1": 0.0
+      },
+      "control/vulnerable": {
+        "as_expected": true,
+        "base_task": "regexeval/133",
+        "pass@1": 0.0,
+        "pattern": "(a+)+b",
+        "usable@1": 0.0,
+        "vulnerable@1": 1.0
+      }
+    },
+    "controls_all_as_expected": true,
+    "cost_usd_per_task": 0.00197653,
+    "cost_usd_total": 0.071155,
+    "dataset": "Re(gEx|DoS)Eval",
+    "failure_detail": [
+      {
+        "error": "empty content (reasoning may have consumed the token budget)",
+        "status": "parse_failure",
+        "task": "regexeval/1914"
+      }
+    ],
+    "k": 3,
+    "max_tokens": 400,
+    "metrics": {
+      "dfa-eq@3": 0.09090909090909091,
+      "dfa-eq@3 (decided)": 0.125,
+      "exact@3": 0.09090909090909091,
+      "pass@3": 0.45454545454545453,
+      "undecided": 3,
+      "usable@3": 0.18181818181818182,
+      "vulnerable@3": 0.0
+    },
+    "metrics_as_sent": {
+      "dfa-eq@3": 0.09090909090909091,
+      "dfa-eq@3 (decided)": 0.125,
+      "exact@3": 0.09090909090909091,
+      "pass@3": 0.45454545454545453,
+      "undecided": 3,
+      "usable@3": 0.18181818181818182,
+      "vulnerable@3": 0.0
+    },
+    "model": "claude-opus-5",
+    "model_requested": "anthropic/claude-opus-5",
+    "provider_requested": {
+      "allow_fallbacks": false,
+      "order": [
+        "Anthropic"
+      ],
+      "require_parameters": true
+    },
+    "providers_resolved": [
+      "Anthropic"
+    ],
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
+    "response_failures": 1,
+    "table": "claude-opus-5\n11 tasks, 11 answered\n  pass@3               45.5%\n  dfa-eq@3              9.1%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   12.5%  (engine limits excluded \u2014 model only)\n  exact@3               9.1%\n  usable@3             18.2%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
+    "tasks_answered": 35,
+    "tasks_attempted": 36,
+    "tasks_scored": 11,
+    "tasks_short_of_k": 1,
+    "tasks_short_of_k_detail": [
+      "regexeval/1914"
+    ],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -384,13 +398,16 @@
     "providers_resolved": [
       "Anthropic"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "claude-sonnet-5\n12 tasks, 12 answered\n  pass@3               16.7%\n  dfa-eq@3             16.7%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   22.2%  (engine limits excluded \u2014 model only)\n  exact@3               0.0%\n  usable@3             16.7%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -460,13 +477,16 @@
     "providers_resolved": [
       "Google AI Studio"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "gemini-3.1-flash-lite\n12 tasks, 12 answered\n  pass@3               25.0%\n  dfa-eq@3             16.7%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   22.2%  (engine limits excluded \u2014 model only)\n  exact@3              16.7%\n  usable@3             16.7%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -539,13 +559,16 @@
     "providers_resolved": [
       "Novita"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "glm-5.2\n12 tasks, 12 answered\n  pass@3               33.3%\n  dfa-eq@3             16.7%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   22.2%  (engine limits excluded \u2014 model only)\n  exact@3               8.3%\n  usable@3             16.7%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -615,13 +638,16 @@
     "providers_resolved": [
       "OpenAI"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "gpt-5.6-sol\n12 tasks, 12 answered\n  pass@3               25.0%\n  dfa-eq@3              8.3%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   12.5%  (engine limits excluded \u2014 model only)\n  exact@3               0.0%\n  usable@3             16.7%\n  vulnerable@3          0.0%  (lower is better)\n  4 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -691,13 +717,16 @@
     "providers_resolved": [
       "OpenAI"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "gpt-5.6-terra\n12 tasks, 12 answered\n  pass@3               25.0%\n  dfa-eq@3              0.0%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)    0.0%  (engine limits excluded \u2014 model only)\n  exact@3               0.0%\n  usable@3              8.3%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -767,13 +796,16 @@
     "providers_resolved": [
       "Alibaba"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "qwen3.6-max-preview\n12 tasks, 12 answered\n  pass@3               25.0%\n  dfa-eq@3              8.3%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)   11.1%  (engine limits excluded \u2014 model only)\n  exact@3               8.3%\n  usable@3              8.3%\n  vulnerable@3          0.0%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0
@@ -843,13 +875,16 @@
     "providers_resolved": [
       "OpenAI"
     ],
-    "python_version": "3.11.15",
-    "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-    "regexbench_version": "0.4.0",
+    "python_version": "3.11.16",
+    "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+    "regexbench_version": "0.4.1",
     "response_failures": 0,
     "table": "gpt-5.6-luna\n12 tasks, 12 answered\n  pass@3               16.7%\n  dfa-eq@3              0.0%  (whole corpus \u2014 a lower bound)\n  dfa-eq@3 (decided)    0.0%  (engine limits excluded \u2014 model only)\n  exact@3               0.0%\n  usable@3              0.0%\n  vulnerable@3          8.3%  (lower is better)\n  3 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
     "tasks_answered": 36,
     "tasks_attempted": 36,
+    "tasks_scored": 12,
+    "tasks_short_of_k": 0,
+    "tasks_short_of_k_detail": [],
     "temperature": null,
     "wrapped_detail": {},
     "wrapped_responses": 0

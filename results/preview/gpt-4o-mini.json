@@ -63,9 +63,9 @@
   "providers_resolved": [
     "OpenAI"
   ],
-  "python_version": "3.11.15",
-  "regexbench_commit": "412eaa95a3f512b5a7bd3d8de2ae70c003d6a206",
-  "regexbench_version": "0.4.0",
+  "python_version": "3.11.16",
+  "regexbench_commit": "ff25e6a5ef463141ae95d512cd43a214e4e7b111",
+  "regexbench_version": "0.4.1",
   "response_failures": 0,
   "table": "gpt-4o-mini\n10 tasks, 10 answered\n  pass@1               40.0%\n  dfa-eq@1             10.0%  (whole corpus \u2014 a lower bound)\n  dfa-eq@1 (decided)   12.5%  (engine limits excluded \u2014 model only)\n  exact@1               0.0%\n  usable@1             10.0%\n  vulnerable@1         20.0%  (lower is better)\n  2 task(s) undecidable \u2014 counted against dfa-eq, excluded from dfa-eq (decided)",
   "tasks_answered": 10,
