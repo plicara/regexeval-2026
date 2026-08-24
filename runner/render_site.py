@@ -190,6 +190,8 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
           <a href="/#mission">Mission</a>
           <a href="/#models">Models</a>
           <a href="/#tools">Tools</a>
+          <a href="/research/">Research</a>
+          <a href="/benchmarks/">Benchmarks</a>
           <a href="/#principles">Principles</a>
           <a href="https://github.com/plicara">GitHub</a>
         </nav>
