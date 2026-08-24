@@ -34,3 +34,10 @@ jobs:
 
       - name: Check every rate in the paper prose comes from a generated macro
         run: make audit
+
+      # The publish-benchmarks workflow is the parity guard between this
+      # repo's results and the site's run page; this only proves the
+      # generator still renders, so a template break fails here on every
+      # push instead of surfacing at publish time.
+      - name: Render the site page from the committed results
+        run: python3 runner/render_site.py --run sweep --out /tmp/rendered.html
