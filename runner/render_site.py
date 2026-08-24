@@ -20,9 +20,16 @@ on this data are not ordered either.
 
 
 The site is hand-written static HTML with no build step, so this emits a
-complete page in the site's own design system -- Blueprint scheme, Archivo,
-the existing .data-table / .eyebrow / .lede components -- rather than
-inventing a layout. Copy the output into the site repo at benchmarks/index.html.
+complete page in the site's own design system -- the technical scheme
+(blueprint at night, notepad by day), Archivo, the existing .data-table /
+.eyebrow / .lede components -- rather than inventing a layout. Copy the
+output into the site repo at benchmarks/regexeval-2026/index.html; the
+/benchmarks/ index that links to it is the site's own page, not ours.
+
+PARITY RULE: this template must render the site's shipped page byte for
+byte from the same results -- that is what lets the publish workflow's
+"already current" check stay quiet. If the site page changes shape, change
+this template to match in the same breath, and vice versa.
 
 Column order follows the site's existing table, with one change: usable@1
 moves first, because it is the headline and pass@1 is the least interesting
@@ -98,8 +105,8 @@ def grouped_rows(summary: list[dict], groups: list[dict], k: int) -> str:
             row_for(by_model[m], k, g["separations"].get(m)) for m in members
         )
         out.append(
-            f'<tbody class="band">\n'
-            f'            <tr class="band-head"><th scope="rowgroup" colspan="7">'
+            f'<tbody class="group">\n'
+            f'            <tr class="group-head"><th scope="rowgroup" colspan="7">'
             f'{html.escape(g["label"])}</th></tr>\n            {rows}\n'
             f'          </tbody>'
         )
@@ -107,8 +114,8 @@ def grouped_rows(summary: list[dict], groups: list[dict], k: int) -> str:
     if unplaced:
         rows = "\n            ".join(row_for(by_model[m], k, None) for m in unplaced)
         out.append(
-            f'<tbody class="band">\n'
-            f'            <tr class="band-head"><th scope="rowgroup" colspan="7">'
+            f'<tbody class="group">\n'
+            f'            <tr class="group-head"><th scope="rowgroup" colspan="7">'
             f'Not compared &mdash; too few scored tasks</th></tr>\n'
             f'            {rows}\n          </tbody>'
         )
@@ -124,17 +131,19 @@ def render(summary: list[dict], run_date: str, k: int, task_count: int,
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Benchmarks &middot; Plicara Labs</title>
+    <title>Regexes you could actually ship &middot; Plicara Labs</title>
     <meta
       name="description"
       content="How good are language models at writing regular expressions you could
 actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval."
     />
-    <link rel="canonical" href="https://plicara.ai/benchmarks/" />
-    <!-- Blueprint's ground, --fh-print. Kept in step with tokens.css by hand;
-         the previous value here (#2e3a42) was a leftover from a palette two
-         repaints ago and tinted the mobile browser chrome off-brand. -->
-    <meta name="theme-color" content="#082C35" />
+    <link rel="canonical" href="https://plicara.ai/benchmarks/regexeval-2026/" />
+    <!-- The technical pair's grounds, kept in step with tokens.css by hand;
+         a single dark value here once tinted the browser chrome off-brand
+         for light-mode readers. One meta per mode, since the page resolves
+         blueprint at night and notepad by day. -->
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#082C35" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
 
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon-180.png" />
@@ -154,30 +163,22 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
     <link rel="stylesheet" href="/assets/style.css" />
 
     <!-- The grouped table is the one thing on this page the site's design
-         system has no component for, because no other table on the site has
-         row groups. Scoped here rather than added to style.css: the site repo
-         receives this file as a drop-in, and a page that needs a stylesheet
-         change in another commit is a page that ships broken when the two get
-         separated. Everything below inherits from currentColor and the
-         surrounding type, so it follows the theme without naming a token. -->
-    <style>
-      .data-table tbody.band + tbody.band {{ border-top: 1px solid; }}
-      .data-table tbody.band + tbody.band > tr:first-child > th {{ padding-top: 1.25rem; }}
-      .data-table .band-head > th {{
-        text-align: left;
-        font-size: 0.8125rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        opacity: 0.72;
-        padding-bottom: 0.35rem;
-      }}
-    </style>
+         system had no component for, because no other table on the site has
+         row groups. It arrived as a <style> block here, scoped so the page
+         could be dropped in from regexeval-2026 without needing a stylesheet
+         change in another commit. That block is now .data-table tbody.group
+         in style.css: "inherits from currentColor, so it follows the theme
+         without naming a token" is what put a full-strength divider on a page
+         where every other rule is drawn in the scheme's rule token. Following
+         the theme and naming the theme's token are not the same thing. -->
   </head>
   <!-- data-scheme sits on body rather than html: tokens.css declares the
        default :root block after the scheme blocks, so a scheme on the root
-       element loses the custom-property tie-break. -->
-  <body data-scheme="blueprint">
+       element loses the custom-property tie-break. `technical` rather than a
+       pinned blueprint: it resolves blueprint at night and notepad by day,
+       the same switch the home page's tools band follows, so a light-mode
+       reader is not dropped onto a dark slab. -->
+  <body data-scheme="technical">
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
@@ -198,24 +199,14 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
       </div>
     </header>
 
-    <main class="wrap basecamp" id="main">
+    <main class="wrap results" id="main">
       <p class="eyebrow">benchmarks &middot; regexbench</p>
       <h1>Regexes you could actually ship.</h1>
-      <p class="lede">
-        Most regex benchmarks ask whether a pattern passes its tests. This one
-        also asks whether it means what the reference means, and whether it can
-        be made to hang your server. A pattern can do the first and fail both
-        of the others.
-      </p>
+      <p class="lede">Most regex benchmarks ask whether a pattern passes its tests. This one also asks whether it means what the reference means, and whether it can be made to hang your server. A pattern can do the first and fail both of the others.</p>
 
       <div class="table-wrap">
         <table class="data-table">
-          <caption class="visually-hidden">
-            {len(summary)} models scored on Re(gEx|DoS)Eval, in {len(groups)}
-            groups by what a paired bootstrap on usable@{k} resolves. The
-            groups are not ranked against each other and the order inside a
-            group is alphabetical.
-          </caption>
+          <caption class="visually-hidden">{len(summary)} models scored on Re(gEx|DoS)Eval, in {len(groups)} groups by what a paired bootstrap on usable@{k} resolves. The groups are not ranked against each other and the order inside a group is alphabetical.</caption>
           <thead>
             <tr>
               <th scope="col">Model</th>
@@ -227,44 +218,21 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
               <th scope="col" class="num">failed</th>
             </tr>
           </thead>
-          <tbody>
-            {body}
-          </tbody>
+          {body}
         </table>
       </div>
 
-      <p class="note">
-        <strong>These are groups, not a ranking.</strong> {GROUP_NOTE} Of the
-        {comparisons} pairwise comparisons between these {len(summary)} models,
-        only {resolved} resolve; the rest are ties this run cannot break. The
-        <strong>separates</strong> column reads +ahead / &minus;behind: how
-        many of the other models this one is distinguishably better than, and
-        worse than. Most of the corpus does no work here &mdash; the majority
-        of tasks give every model the identical result.
-      </p>
+      <p class="note"><strong>These are groups, not a ranking.</strong> {GROUP_NOTE} Of the {comparisons} pairwise comparisons between these {len(summary)} models, only {resolved} resolve; the rest are ties this run cannot break. The <strong>separates</strong> column reads +ahead / &minus;behind: how many of the other models this one is distinguishably better than, and worse than. Most of the corpus does no work here &mdash; the majority of tasks give every model the identical result.</p>
 
-      <p class="note">
-        <strong>usable@{k}</strong> is the headline: correct, not vulnerable to
-        catastrophic backtracking, and never proven to describe a different
-        language than the reference. The gap between it and
-        <strong>pass@{k}</strong> is every pattern that passes its tests and
-        still should not ship.
-      </p>
+      <p class="note"><strong>usable@{k}</strong> is the headline: correct, not vulnerable to catastrophic backtracking, and never proven to describe a different language than the reference. The gap between it and <strong>pass@{k}</strong> is every pattern that passes its tests and still should not ship.</p>
 
-      <p class="note">
-        {task_count} tasks from Re(gEx|DoS)Eval, k={k} samples per task, reasoning
-        disabled so every model faces the same conditions. Scored with
-        <code>regexbench</code> {html.escape(config.REGEXBENCH_VERSION)}. Run
-        {html.escape(run_date)}. Every raw
-        response is committed, and the scores recompute from them offline &mdash;
-        <a href="https://github.com/plicara/regexeval-2026">see the
-        repository</a> for the method, the limitations, and a re-run command.
-      </p>
+      <p class="note">{task_count} tasks from Re(gEx|DoS)Eval, k={k} samples per task, reasoning disabled so every model faces the same conditions. Scored with <code>regexbench</code> {html.escape(config.REGEXBENCH_VERSION)}. Run {html.escape(run_date)}. Every raw response is committed, and the scores recompute from them offline &mdash; <a href="https://github.com/plicara/regexeval-2026">see the repository</a> for the method, the limitations, and a re-run command.</p>
 
       <div class="cta-row">
         <a class="btn btn-primary" href="https://github.com/plicara/regexeval-2026">Results and method</a>
+        <a class="btn btn-ghost" href="/research/whether-anyone-ever-ran-it/">The article</a>
         <a class="btn btn-ghost" href="https://github.com/plicara/regexbench">regexbench</a>
-        <a class="btn btn-ghost" href="/">&larr; Back to the lab</a>
+        <a class="btn btn-ghost" href="/benchmarks/">&larr; All benchmarks</a>
       </div>
     </main>
 
@@ -332,7 +300,7 @@ def main():
     print(f"wrote {out} ({len(page)} bytes)")
     print(f"{len(groups)} groups, {intervals['pairwise_resolved']} of "
           f"{len(intervals['pairwise'])} comparisons resolved")
-    print("copy into the site repo as benchmarks/index.html")
+    print("copy into the site repo as benchmarks/regexeval-2026/index.html")
 
 
 if __name__ == "__main__":
