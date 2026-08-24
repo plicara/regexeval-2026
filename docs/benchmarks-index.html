@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Benchmarks &middot; Plicara Labs</title>
+    <meta
+      name="description"
+      content="How good are language models at writing regular expressions you could
+actually ship? regexbench scored across 11 models on Re(gEx|DoS)Eval."
+    />
+    <link rel="canonical" href="https://plicara.ai/benchmarks/" />
+    <!-- Blueprint's ground, --fh-print. Kept in step with tokens.css by hand;
+         the previous value here (#2e3a42) was a leftover from a palette two
+         repaints ago and tinted the mobile browser chrome off-brand. -->
+    <meta name="theme-color" content="#082C35" />
+
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon-180.png" />
+
+    <!-- Archivo sets the page; JetBrains Mono sets the nav, the eyebrows and
+         the buttons, all above the fold. Without these preloads the browser
+         only discovers the mono after parsing style.css. Both weights: 400
+         for the nav and footer, 700 for eyebrows and buttons. -->
+    <link rel="preload" as="font" type="font/woff2"
+          href="/assets/fonts/archivo.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2"
+          href="/assets/fonts/jetbrains-mono-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2"
+          href="/assets/fonts/jetbrains-mono-700.woff2" crossorigin />
+
+    <link rel="stylesheet" href="/assets/tokens.css" />
+    <link rel="stylesheet" href="/assets/style.css" />
+
+    <!-- The grouped table is the one thing on this page the site's design
+         system has no component for, because no other table on the site has
+         row groups. Scoped here rather than added to style.css: the site repo
+         receives this file as a drop-in, and a page that needs a stylesheet
+         change in another commit is a page that ships broken when the two get
+         separated. Everything below inherits from currentColor and the
+         surrounding type, so it follows the theme without naming a token. -->
+    <style>
+      .data-table tbody.band + tbody.band { border-top: 1px solid; }
+      .data-table tbody.band + tbody.band > tr:first-child > th { padding-top: 1.25rem; }
+      .data-table .band-head > th {
+        text-align: left;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        opacity: 0.72;
+        padding-bottom: 0.35rem;
+      }
+    </style>
+  </head>
+  <!-- data-scheme sits on body rather than html: tokens.css declares the
+       default :root block after the scheme blocks, so a scheme on the root
+       element loses the custom-property tie-break. -->
+  <body data-scheme="blueprint">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true"></span>
+          Plicara Labs
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/#mission">Mission</a>
+          <a href="/#models">Models</a>
+          <a href="/#tools">Tools</a>
+          <a href="/research/">Research</a>
+          <a href="/benchmarks/">Benchmarks</a>
+          <a href="/#principles">Principles</a>
+          <a href="https://github.com/plicara">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap basecamp" id="main">
+      <p class="eyebrow">benchmarks &middot; regexbench</p>
+      <h1>Regexes you could actually ship.</h1>
+      <p class="lede">
+        Most regex benchmarks ask whether a pattern passes its tests. This one
+        also asks whether it means what the reference means, and whether it can
+        be made to hang your server. A pattern can do the first and fail both
+        of the others.
+      </p>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption class="visually-hidden">
+            11 models scored on Re(gEx|DoS)Eval, in 3
+            groups by what a paired bootstrap on usable@3 resolves. The
+            groups are not ranked against each other and the order inside a
+            group is alphabetical.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col" class="num">usable@3</th>
+              <th scope="col" class="num">pass@3</th>
+              <th scope="col" class="num">vulnerable@3</th>
+              <th scope="col" class="num">dfa-eq@3</th>
+              <th scope="col" class="num">separates</th>
+              <th scope="col" class="num">failed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tbody class="band">
+            <tr class="band-head"><th scope="rowgroup" colspan="7">Distinguishably ahead of at least one model, behind none</th></tr>
+            <tr><th scope="row" class="mono">claude-opus-5</th><td class="num mono">20.8%</td><td class="num mono">46.1%</td><td class="num mono">13.2%</td><td class="num mono">11.6%</td><td class="num mono">+1 / &minus;0</td><td class="num mono">36/1350</td></tr>
+            <tr><th scope="row" class="mono">kimi-k3</th><td class="num mono">23.8%</td><td class="num mono">46.5%</td><td class="num mono">12.9%</td><td class="num mono">14.1%</td><td class="num mono">+6 / &minus;0</td><td class="num mono">16/1350</td></tr>
+            <tr><th scope="row" class="mono">qwen3.6-max-preview</th><td class="num mono">21.6%</td><td class="num mono">42.4%</td><td class="num mono">9.1%</td><td class="num mono">13.8%</td><td class="num mono">+2 / &minus;0</td><td class="num mono">0/1350</td></tr>
+          </tbody>
+          <tbody class="band">
+            <tr class="band-head"><th scope="rowgroup" colspan="7">No comparison against any other model resolves</th></tr>
+            <tr><th scope="row" class="mono">deepseek-v4-flash-0731</th><td class="num mono">19.8%</td><td class="num mono">38.0%</td><td class="num mono">12.0%</td><td class="num mono">11.3%</td><td class="num mono">+0 / &minus;0</td><td class="num mono">0/1350</td></tr>
+            <tr><th scope="row" class="mono">gpt-5.6-sol</th><td class="num mono">20.9%</td><td class="num mono">42.1%</td><td class="num mono">10.0%</td><td class="num mono">9.4%</td><td class="num mono">+0 / &minus;0</td><td class="num mono">1/1350</td></tr>
+          </tbody>
+          <tbody class="band">
+            <tr class="band-head"><th scope="rowgroup" colspan="7">Distinguishably behind at least one model, ahead of none</th></tr>
+            <tr><th scope="row" class="mono">claude-sonnet-5</th><td class="num mono">18.0%</td><td class="num mono">40.7%</td><td class="num mono">10.9%</td><td class="num mono">10.4%</td><td class="num mono">+0 / &minus;2</td><td class="num mono">0/1350</td></tr>
+            <tr><th scope="row" class="mono">gemini-3.1-flash-lite</th><td class="num mono">17.1%</td><td class="num mono">38.7%</td><td class="num mono">12.0%</td><td class="num mono">9.3%</td><td class="num mono">+0 / &minus;3</td><td class="num mono">0/1350</td></tr>
+            <tr><th scope="row" class="mono">glm-5.2</th><td class="num mono">18.7%</td><td class="num mono">42.4%</td><td class="num mono">14.2%</td><td class="num mono">10.4%</td><td class="num mono">+0 / &minus;1</td><td class="num mono">0/1350</td></tr>
+            <tr><th scope="row" class="mono">gpt-5.6-luna</th><td class="num mono">18.5%</td><td class="num mono">39.2%</td><td class="num mono">11.6%</td><td class="num mono">9.1%</td><td class="num mono">+0 / &minus;1</td><td class="num mono">1/1350</td></tr>
+            <tr><th scope="row" class="mono">gpt-5.6-terra</th><td class="num mono">18.7%</td><td class="num mono">42.2%</td><td class="num mono">12.0%</td><td class="num mono">10.2%</td><td class="num mono">+0 / &minus;1</td><td class="num mono">0/1350</td></tr>
+            <tr><th scope="row" class="mono">qwen3.6-plus</th><td class="num mono">19.8%</td><td class="num mono">39.8%</td><td class="num mono">9.8%</td><td class="num mono">11.6%</td><td class="num mono">+0 / &minus;1</td><td class="num mono">0/1350</td></tr>
+          </tbody>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="note">
+        <strong>These are groups, not a ranking.</strong> Groups say what the paired bootstrap resolves at 95%, and nothing more. They are not ranked against each other: claude-opus-5 is in the first group and glm-5.2 in the last, and those two are not distinguishable from one another. Order within a group is alphabetical and means nothing. Of the
+        55 pairwise comparisons between these 11 models,
+        only 9 resolve; the rest are ties this run cannot break. The
+        <strong>separates</strong> column reads +ahead / &minus;behind: how
+        many of the other models this one is distinguishably better than, and
+        worse than. Most of the corpus does no work here &mdash; the majority
+        of tasks give every model the identical result.
+      </p>
+
+      <p class="note">
+        <strong>usable@3</strong> is the headline: correct, not vulnerable to
+        catastrophic backtracking, and never proven to describe a different
+        language than the reference. The gap between it and
+        <strong>pass@3</strong> is every pattern that passes its tests and
+        still should not ship.
+      </p>
+
+      <p class="note">
+        450 tasks from Re(gEx|DoS)Eval, k=3 samples per task, reasoning
+        disabled so every model faces the same conditions. Scored with
+        <code>regexbench</code> 0.4.1. Run
+        2026-08-12. Every raw
+        response is committed, and the scores recompute from them offline &mdash;
+        <a href="https://github.com/plicara/regexeval-2026">see the
+        repository</a> for the method, the limitations, and a re-run command.
+      </p>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/plicara/regexeval-2026">Results and method</a>
+        <a class="btn btn-ghost" href="https://github.com/plicara/regexbench">regexbench</a>
+        <a class="btn btn-ghost" href="/">&larr; Back to the lab</a>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>&copy; Plicara Labs</span>
+        <div class="footer-links">
+          <a href="mailto:info@plicara.ai">info@plicara.ai</a>
+          <a href="https://github.com/plicara">GitHub</a>
+          <a href="/">Home</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
