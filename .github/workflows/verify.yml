@@ -2,7 +2,7 @@
 #
 # No API key, no network calls to any model provider, no cost. If this job
 # is green, the numbers in README.md are reproducible from the evidence in
-# this repo -- which is the claim the leaderboard makes, mechanized rather
+# this repo -- which is the claim the study makes, mechanized rather
 # than asserted.
 name: verify published scores
 

@@ -31,8 +31,11 @@
 >    5,269 correct samples (7.4%), or 144 of 2,051 model-task pairs.
 >
 > Every table in this file is generated from `results/` by
-> `runner/render_docs.py`, and `make check` fails if they drift. Nothing here
-> has been published to the site.
+> `runner/render_docs.py`, and `make check` fails if they drift. Published
+> 2026-08-23: the run page lives at
+> [plicara.ai/benchmarks/regexeval-2026](https://plicara.ai/benchmarks/regexeval-2026/),
+> the write-up under
+> [plicara.ai/research/whether-anyone-ever-ran-it](https://plicara.ai/research/whether-anyone-ever-ran-it/).
 
 **How good are language models at writing regular expressions you could
 actually ship?**
