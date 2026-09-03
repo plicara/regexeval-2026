@@ -1,14 +1,20 @@
 # regexeval-2026 -- everything runs from a clean clone with `make`.
-.PHONY: setup setup-corpora pin detector calibrate score persample analysis check docs tables figures audit crosscorpus collect clean help
+.PHONY: check-python setup setup-corpora pin detector calibrate score persample analysis check docs tables figures audit crosscorpus collect clean help
 
 PY ?= python3
 RUN ?= preview
 REGEXBENCH_PIN = regexbench==0.4.1
+PYTHON_TARGETS = setup crosscorpus calibrate docs tables audit figures score persample analysis check collect
 
 DEEP_REGEX_URL = https://github.com/nicholaslocascio/deep-regex.git
 DEEP_REGEX_COMMIT = 096490db7f4b0394fbb46b914cb35a0aa1cba29c
 LINGUA_FRANCA_URL = https://github.com/VTLeeLab/LinguaFranca-FSE19.git
 LINGUA_FRANCA_COMMIT = a75bd51713d14aa9b48c32e103a3da500854f518
+
+$(PYTHON_TARGETS): check-python
+
+check-python:
+	@$(PY) -c 'import sys; sys.exit("regexeval-2026 requires Python 3.10 or newer (found %s)" % sys.version.split()[0] if sys.version_info < (3, 10) else 0)'
 
 help:
 	@echo "make setup          install the pinned scorer + download the corpus"
