@@ -58,6 +58,7 @@ jobs:
     env:
       RUN: ${{ inputs.run || 'sweep' }}
     steps:
+      - uses: astral-sh/setup-uv@v6
       - name: Check out the study
         uses: actions/checkout@v4
         with:
@@ -93,7 +94,7 @@ jobs:
       - uses: actions/setup-python@v5
         if: steps.token.outputs.available == 'true'
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       # render_site.py recovers the run date from config.RUN_DATES and the
       # task count from the summary, so this needs no arguments that a person
@@ -107,7 +108,7 @@ jobs:
         if: steps.token.outputs.available == 'true'
         run: |
           cd study
-          python3 runner/render_site.py --run "$RUN" \
+          uv run --locked python runner/render_site.py --run "$RUN" \
             --out "$GITHUB_WORKSPACE/site/benchmarks/regexeval-2026/index.html"
 
       - name: Open a pull request against the site if it changed

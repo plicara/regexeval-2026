@@ -19,3 +19,8 @@ PLAN.md
 .venv/
 .claude/
 .ruff_cache/
+
+# Local environments and disposable lab views
+.plicara/generated/
+.venv/
+__pycache__/
