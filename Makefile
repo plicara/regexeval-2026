@@ -1,10 +1,9 @@
 # regexeval-2026 -- everything runs from a clean clone with `make`.
 .PHONY: check-python setup setup-corpora pin detector calibrate score persample analysis check docs tables figures audit crosscorpus collect clean help
 
-PY ?= python3
+PY ?= uv run --locked python
 RUN ?= preview
-REGEXBENCH_PIN = regexbench==0.4.1
-PYTHON_TARGETS = setup crosscorpus calibrate docs tables audit figures score persample analysis check collect
+PYTHON_TARGETS = crosscorpus calibrate docs tables audit figures score persample analysis check collect
 
 DEEP_REGEX_URL = https://github.com/nicholaslocascio/deep-regex.git
 DEEP_REGEX_COMMIT = 096490db7f4b0394fbb46b914cb35a0aa1cba29c
@@ -17,7 +16,8 @@ check-python:
 	@$(PY) -c 'import sys; sys.exit("regexeval-2026 requires Python 3.10 or newer (found %s)" % sys.version.split()[0] if sys.version_info < (3, 10) else 0)'
 
 help:
-	@echo "make setup          install the pinned scorer + download the corpus"
+	@echo "make setup          install the locked Python environment"
+	@echo "make setup-data     download the evaluation corpus (explicit network step)"
 	@echo "make score          recompute scores from committed predictions (free, offline)"
 	@echo "make check          same, and fail if they differ from committed results (CI)"
 	@echo "make analysis       recompute every derived result the paper reads (offline)"
@@ -32,7 +32,9 @@ help:
 # `make -C paper all` need it, and an undeclared import is the same class of
 # problem as an ungenerated table: it works on the machine that wrote it.
 setup:
-	$(PY) -m pip install --quiet --upgrade "$(REGEXBENCH_PIN)" matplotlib
+	uv sync --locked
+
+setup-data:
 	@mkdir -p data
 	@test -f data/RegexEval.json || curl -fsSL -o data/RegexEval.json \
 	  https://raw.githubusercontent.com/s2e-lab/RegexEval/master/DatasetCollection/RegexEval.json
@@ -105,6 +107,8 @@ analysis:
 	$(PY) runner/complexity_compare.py --run $(RUN)
 
 check:
+	uv run --python 3.12 --locked --script .plicara/check.py
+	uv lock --check
 	$(PY) runner/score.py --run $(RUN) --check
 	$(PY) runner/per_sample.py --run $(RUN) --check
 	$(PY) runner/render_docs.py --run sweep --check

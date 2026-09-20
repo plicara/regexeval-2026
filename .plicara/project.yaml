@@ -1,0 +1,18 @@
+schema_version: 1
+id: regexeval-2026
+name: "Regex evaluation study"
+description: "Reproducible evaluation of generated regex behavior, equivalence, and safety."
+kind: study
+status: completed
+repository: https://github.com/plicara/regexeval-2026
+python:
+  - .
+artifacts:
+  - kind: reference
+    path: ARTICLE.md
+  - kind: reference
+    path: runner
+  - kind: reference
+    path: results
+  - kind: reference
+    path: paper

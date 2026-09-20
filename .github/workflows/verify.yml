@@ -16,13 +16,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install pinned scorer and fetch the corpus
-        run: make setup
+        run: make setup setup-data
 
       - name: Recompute scores and compare against what is committed
         run: make check
@@ -40,4 +41,4 @@ jobs:
       # generator still renders, so a template break fails here on every
       # push instead of surfacing at publish time.
       - name: Render the site page from the committed results
-        run: python3 runner/render_site.py --run sweep --out /tmp/rendered.html
+        run: uv run --locked python runner/render_site.py --run sweep --out /tmp/rendered.html

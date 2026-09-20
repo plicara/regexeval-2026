@@ -216,7 +216,8 @@ without an API key, without spending anything, and without trusting us:
 ```bash
 git clone https://github.com/plicara/regexeval-2026
 cd regexeval-2026
-make setup    # installs the pinned scorer, downloads the corpus
+make setup         # installs the locked scorer and analysis environment
+make setup-data    # explicitly downloads the evaluation corpus
 make score RUN=sweep
 ```
 
@@ -291,8 +292,12 @@ Scoring by [`regexbench`](https://github.com/plicara/regexbench)
 (Apache-2.0), pinned to `regexbench==0.4.1` on PyPI, which is commit
 `ff25e6a5`; both are recorded in every result file. Corpus:
 [Re(gEx|DoS)Eval](https://github.com/s2e-lab/RegexEval), not redistributed
-here — `make setup` fetches it.
+here — `make setup-data` fetches it.
 
 ## License
 
 Code [Apache-2.0](LICENSE).
+
+## Working in this repository
+
+Project metadata and research context live in [.plicara/README.md](.plicara/README.md); agent constraints live in [AGENTS.md](AGENTS.md). Use `make setup` and `make check` for the default local environment and verification. Expensive experiments, model downloads, and publication are separate explicit steps. Project status is authoritative in `.plicara/project.yaml`; no central board update is required.
