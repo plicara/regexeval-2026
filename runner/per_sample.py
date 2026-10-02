@@ -92,9 +92,9 @@ def samples_of(model: str, run: str) -> dict[str, list[str]]:
     return out
 
 
-def build(model: str, run: str) -> dict[str, dict]:
+def build(model: str, run: str, workers: int = WORKERS) -> dict[str, dict]:
     jobs = sorted(samples_of(model, run).items())
-    with ProcessPoolExecutor(max_workers=WORKERS, initializer=_init,
+    with ProcessPoolExecutor(max_workers=workers, initializer=_init,
                              initargs=(str(config.require_dataset()),)) as pool:
         scored = list(pool.map(_score, jobs, chunksize=8))
     per_sample, per_task, correct_secure = {}, {}, {}
@@ -106,6 +106,14 @@ def build(model: str, run: str) -> dict[str, dict]:
         correct_secure[name] = {"correct_secure": cs, "n": n}
     return {"per_sample": per_sample, "per_task": per_task,
             "correct_secure": correct_secure}
+
+
+def _drifted(model: str, run: str, built: dict[str, dict]) -> bool:
+    for kind, data in built.items():
+        path = config.RESULTS_DIR / run / kind / f"{model}.json"
+        if not path.exists() or json.loads(path.read_text()) != data:
+            return True
+    return False
 
 
 def main():
@@ -129,6 +137,12 @@ def main():
     drift = []
     for model in labels:
         built = build(model, args.run)
+        if args.check and _drifted(model, args.run, built):
+            # The safety screen times its probes (regexbench, 0.5 s), so a
+            # borderline pattern can flip on a loaded machine. Re-score the
+            # model alone and in one process before calling it drift; a real
+            # difference survives the quiet run, a load artefact does not.
+            built = build(model, args.run, workers=1)
         for kind, data in built.items():
             directory = config.RESULTS_DIR / args.run / kind
             path = directory / f"{model}.json"
