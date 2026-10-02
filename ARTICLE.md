@@ -138,6 +138,7 @@ model. Between **17.1% and 23.8% survive all three questions**, and that
 second column is a conjunction of the three, which we take apart much further
 down because it does not mean what it looks like it means.
 
+<!-- generated: models -->
 | Model | passes tests | survives all three | vulnerable |
 | --- | ---: | ---: | ---: |
 | `kimi-k3` | 46.5% | 23.8% | 12.9% |
@@ -151,6 +152,7 @@ down because it does not mean what it looks like it means.
 | `gpt-5.6-luna` | 39.2% | 18.5% | 11.6% |
 | `claude-sonnet-5` | 40.7% | 18.0% | 10.9% |
 | `gemini-3.1-flash-lite` | 38.7% | 17.1% | 12.0% |
+<!-- /generated -->
 
 The one number in that table to hold on to is the last column. We found **390
 generations that passed every test and were exploitable**, out of 5,269 that
@@ -175,12 +177,14 @@ gold standard, written by people, for a benchmark about regular expressions.
 
 The models range from 7.3% to 10.7%. Pooled across all eleven, 9.0%.
 
+<!-- generated: human-baseline -->
 | | vulnerable |
 | --- | ---: |
 | **Human reference answers** | **13.6%** |
-| Best model (`qwen3.6-max-preview`) | 7.3% |
+| Best models (`deepseek-v4-flash-0731`, `qwen3.6-max-preview`) | 7.3% |
 | Worst model (`kimi-k3`) | 10.7% |
 | All models pooled | 9.0% |
+<!-- /generated -->
 
 Every model screens safer than the answer key, though how many of them do so
 *provably* is a smaller number. Eleven independent confidence intervals are
@@ -224,6 +228,7 @@ regexes in the wild are short fragments with no opportunity to. So the table
 below restricts every population to anchored `^...$` patterns, which is the
 closest we can get to comparing similar objects:
 
+<!-- generated: anchored -->
 | anchored patterns only | written to be | n | vulnerable |
 | --- | --- | ---: | ---: |
 | RegexLib, published for reuse | read | 1,684 | 20.1% |
@@ -231,6 +236,7 @@ closest we can get to comparing similar objects:
 | Re(gEx\|DoS)Eval gold answers | read | 538 | 13.4% |
 | **our eleven models** | — | 3,613 | **9.8%** |
 | **production code** | **run** | 4,000 | **8.9%** |
+<!-- /generated -->
 
 Real shipped code is safer than every model we tested, so the endemic reading
 is wrong. But the more interesting thing is the column we did not expect to need.
@@ -282,6 +288,7 @@ it produced, fed it to Python at growing sizes, and timed the match. A
 pattern counts as genuinely dangerous when the matcher measurably fails to
 keep up.
 
+<!-- generated: screen-recall -->
 | Population | our screen caught | recall |
 | --- | ---: | ---: |
 | Stack Overflow | 25 of 27 | 92.6% |
@@ -291,6 +298,7 @@ keep up.
 | NL-RX-Synth | 16 of 21 | 76.2% |
 | our models | 11 of 15 | 73.3% |
 | KB13 | 2 of 3 | 66.7% |
+<!-- /generated -->
 
 Our screen is *worse* at production code, 80%, than at the showcase
 populations we compare production code against, 92%. That is precisely the
@@ -464,10 +472,12 @@ explanation.
 
 The eleven models span a 98× range in price.
 
+<!-- generated: cost-range -->
 | Model | survives all three | cost per request |
 | --- | ---: | ---: |
 | `deepseek-v4-flash-0731` | 19.8% | $0.000026 |
 | `claude-opus-5` | 20.8% | $0.002514 |
+<!-- /generated -->
 
 DeepSeek's model costs **98× less** and scores a point *lower*, a difference
 comfortably inside what our own statistics can resolve, which is to say the

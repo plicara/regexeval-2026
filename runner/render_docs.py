@@ -1,4 +1,4 @@
-"""Fill the tables in README.md and APPENDIX.md from committed results.
+"""Fill the tables in README.md, APPENDIX.md and ARTICLE.md from committed results.
 
 The paper's tables are generated (paper/make_tables.py) and the markdown
 tables were not, which is how the two came to disagree: a reviewer found the
@@ -162,6 +162,79 @@ def populations() -> str:
     return "\n".join(out)
 
 
+def article_models(rows) -> str:
+    out = ["| Model | passes tests | survives all three | vulnerable |",
+           "| --- | ---: | ---: | ---: |"]
+    for d in sorted(rows, key=lambda d: -d["metrics"]["usable@3"]):
+        m = d["metrics"]
+        out.append(f"| `{d['model']}` | {m['pass@3']*100:.1f}% | "
+                   f"{m['usable@3']*100:.1f}% | {m['vulnerable@3']*100:.1f}% |")
+    return "\n".join(out)
+
+
+def article_human_baseline() -> str:
+    anch = json.loads((config.RESULTS_DIR / "anchored_models.json").read_text())
+    rate = {m: v["unrestricted"]["rate_pct"] for m, v in anch["models"].items()}
+    # Exact shares, so a tie is a tie: two models can sit on the same 33/450.
+    exact = {m: v["unrestricted"]["vulnerable"] / v["unrestricted"]["n"]
+             for m, v in anch["models"].items()}
+
+    best, worst = min(exact, key=exact.get), max(exact, key=exact.get)
+
+    def row(label, pick):
+        ties = sorted(m for m in exact if exact[m] == exact[pick])
+        names = ", ".join(f"`{m}`" for m in ties)
+        return f"| {label}{'s' if len(ties) > 1 else ''} ({names}) | {rate[pick]:.1f}% |"
+
+    return "\n".join([
+        "| | vulnerable |",
+        "| --- | ---: |",
+        f"| **Human reference answers** | **{anch['reference']['unrestricted']['rate_pct']:.1f}%** |",
+        row("Best model", best),
+        row("Worst model", worst),
+        f"| All models pooled | {anch['pooled']['unrestricted']['rate_pct']:.1f}% |"])
+
+
+def article_anchored() -> str:
+    cc = json.loads((config.RESULTS_DIR / "cross_corpus_redos.json").read_text())
+    anch = json.loads((config.RESULTS_DIR / "anchored_models.json").read_text())
+    a = cc["anchored"]
+    out = ["| anchored patterns only | written to be | n | vulnerable |",
+           "| --- | --- | ---: | ---: |"]
+    for label, written, b in (
+            ("RegexLib, published for reuse", "read", a["RegexLib, anchored"]),
+            ("Stack Overflow answers", "read", a["Stack Overflow, anchored"]),
+            ("Re(gEx\\|DoS)Eval gold answers", "read", a["RegexEval gold, anchored"])):
+        out.append(f"| {label} | {written} | {b['n']:,} | {b['rate_pct']:.1f}% |")
+    b = anch["pooled"]["outputs"]
+    out.append(f"| **our eleven models** | — | {b['n']:,} | **{b['rate_pct']:.1f}%** |")
+    b = a["Production code, anchored"]
+    out.append(f"| **production code** | **run** | {b['n']:,} | **{b['rate_pct']:.1f}%** |")
+    return "\n".join(out)
+
+
+def article_screen_recall() -> str:
+    cal = json.loads((config.RESULTS_DIR / "screen_calibration.json").read_text())["populations"]
+    names = {"Stack Overflow": "Stack Overflow", "RegexLib": "regexlib.com",
+             "Re(gEx|DoS)Eval gold": "Re(gEx\\|DoS)Eval gold", "Production code": "production code",
+             "NL-RX-Synth": "NL-RX-Synth", "Model outputs": "our models", "KB13": "KB13"}
+    out = ["| Population | our screen caught | recall |", "| --- | ---: | ---: |"]
+    for key, p in sorted(cal.items(), key=lambda kv: -kv[1]["recall_pct"]):
+        out.append(f"| {names[key]} | {p['confirmed_and_caught']} of "
+                   f"{p['dynamically_confirmed']} | {p['recall_pct']:.1f}% |")
+    return "\n".join(out)
+
+
+def article_cost(rows) -> str:
+    cheap = min(rows, key=lambda d: d["cost_usd_per_task"])
+    dear = max(rows, key=lambda d: d["cost_usd_per_task"])
+    out = ["| Model | survives all three | cost per request |", "| --- | ---: | ---: |"]
+    for d in (cheap, dear):
+        out.append(f"| `{d['model']}` | {d['metrics']['usable@3']*100:.1f}% | "
+                   f"${d['cost_usd_per_task']:.6f} |")
+    return "\n".join(out)
+
+
 def splice(path: pathlib.Path, name: str, body: str, check: bool) -> bool:
     text = path.read_text()
     pattern = re.compile(
@@ -191,13 +264,18 @@ def main():
         (repo / "README.md", "populations", populations()),
         (repo / "APPENDIX.md", "full-metrics", appendix(rows)),
         (repo / "APPENDIX.md", "human-baseline", human_baseline()),
+        (repo / "ARTICLE.md", "models", article_models(rows)),
+        (repo / "ARTICLE.md", "human-baseline", article_human_baseline()),
+        (repo / "ARTICLE.md", "anchored", article_anchored()),
+        (repo / "ARTICLE.md", "screen-recall", article_screen_recall()),
+        (repo / "ARTICLE.md", "cost-range", article_cost(rows)),
     ]
     stale = [f"{p.name}:{name}" for p, name, body in blocks
              if splice(p, name, body, args.check)]
     if args.check:
         if stale:
             raise SystemExit("FAIL: generated doc blocks are stale: " + ", ".join(stale))
-        print("OK: README.md and APPENDIX.md tables match the committed results.")
+        print("OK: README.md, APPENDIX.md and ARTICLE.md tables match the committed results.")
     else:
         print("rewrote " + (", ".join(stale) if stale else "nothing (already current)"))
 
