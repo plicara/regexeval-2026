@@ -20,8 +20,8 @@ on this data are not ordered either.
 
 
 The site is hand-written static HTML with no build step, so this emits a
-complete page in the site's own design system -- the technical scheme
-(blueprint at night, notepad by day), Archivo, the existing .data-table /
+complete page in the site's own design system -- the cut-paper scheme
+(kraft by day, umber at night), Hedvig and Figtree, the existing .data-table /
 .eyebrow / .lede components -- rather than inventing a layout. Copy the
 output into the site repo at benchmarks/regexeval-2026/index.html; the
 /benchmarks/ index that links to it is the site's own page, not ours.
@@ -131,36 +131,27 @@ def render(summary: list[dict], run_date: str, k: int, task_count: int,
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Regexes you could actually ship &middot; Plicara Labs</title>
+    <title>Regexes you could actually ship &middot; plicara labs</title>
     <meta
       name="description"
       content="How good are language models at writing regular expressions you could
 actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval."
     />
     <link rel="canonical" href="https://plicara.ai/benchmarks/regexeval-2026/" />
-    <!-- The technical pair's grounds, kept in step with tokens.css by hand;
-         a single dark value here once tinted the browser chrome off-brand
-         for light-mode readers. One meta per mode, since the page resolves
-         blueprint at night and notepad by day. -->
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#082C35" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" content="#F4EFE4" />
 
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon-180.png" />
 
-    <!-- Archivo sets the page; JetBrains Mono sets the nav, the eyebrows and
-         the buttons, all above the fold. Without these preloads the browser
-         only discovers the mono after parsing style.css. Both weights: 400
-         for the nav and footer, 700 for eyebrows and buttons. -->
+    <!-- The display serif and the body sans render above the fold on every
+         page; JetBrains Mono only sets figures and code, so it loads late. -->
     <link rel="preload" as="font" type="font/woff2"
-          href="/assets/fonts/archivo.woff2" crossorigin />
+          href="/assets/fonts/hedvig-letters-serif.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2"
-          href="/assets/fonts/jetbrains-mono-400.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2"
-          href="/assets/fonts/jetbrains-mono-700.woff2" crossorigin />
+          href="/assets/fonts/figtree.woff2" crossorigin />
 
     <link rel="stylesheet" href="/assets/tokens.css" />
-    <link rel="stylesheet" href="/assets/style.css" />
+    <link rel="stylesheet" href="/assets/style.css?v=20261102" />
 
     <!-- The grouped table is the one thing on this page the site's design
          system had no component for, because no other table on the site has
@@ -172,29 +163,23 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
          where every other rule is drawn in the scheme's rule token. Following
          the theme and naming the theme's token are not the same thing. -->
   </head>
-  <!-- data-scheme sits on body rather than html: tokens.css declares the
-       default :root block after the scheme blocks, so a scheme on the root
-       element loses the custom-property tie-break. `technical` rather than a
-       pinned blueprint: it resolves blueprint at night and notepad by day,
-       the same switch the home page's tools band follows, so a light-mode
-       reader is not dropped onto a dark slab. -->
-  <body data-scheme="technical">
+  <body>
+    <svg class="paper-defs" aria-hidden="true" focusable="false"><filter id="torn" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="9"/></filter></svg>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href="/">
           <span class="brand-mark" aria-hidden="true"></span>
-          Plicara Labs
+          plicara labs
         </a>
         <nav class="site-nav" aria-label="Primary">
-          <a href="/#mission">Mission</a>
-          <a href="/#models">Models</a>
-          <a href="/#tools">Tools</a>
           <a href="/research/">Research</a>
+          <a href="/essays/">Essays</a>
+          <a href="/tools/">Tools</a>
           <a href="/benchmarks/">Benchmarks</a>
-          <a href="/#principles">Principles</a>
-          <a href="https://github.com/plicara">GitHub</a>
+          <a href="/about/">About</a>
+          <a href="/#contact">Follow</a>
         </nav>
       </div>
     </header>
@@ -238,7 +223,7 @@ actually ship? regexbench scored across {len(summary)} models on Re(gEx|DoS)Eval
 
     <footer class="site-footer">
       <div class="wrap">
-        <span>&copy; Plicara Labs</span>
+        <span>&copy; plicara labs</span>
         <div class="footer-links">
           <a href="mailto:info@plicara.ai">info@plicara.ai</a>
           <a href="https://github.com/plicara">GitHub</a>
